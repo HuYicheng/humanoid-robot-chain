@@ -1,0 +1,522 @@
+<title>拆开人形机器人</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
+<style>
+/* 版式：顶栏（名字、搜索、各部分导航）+ 一栏内容；长的部分按小节分页，名单页是筛选条 + 分页的表 */
+:root {
+  --bg: #f3f5f7; --surface: #ffffff; --sunk: #e9edf1; --fg: #14181d; --muted: #586372; --line: #d6dce3;
+  --accent: #1c5cc0; --accent-soft: #e2eaf8; --mark: #fff0b8; --banner: #fff4dc; --banner-fg: #5a4200;
+  --v-a: #2a78d6; --v-unl: #eb6834; --v-hkus: #1baf7a; --v-oth: #eda100; --v-unk: #a3a8ae;
+  --t-a: #0d3b78; --t-b: #2a78d6; --t-c: #7fb0ea; --t-d: #c4c3b9; --t-x: #a9a89e; --t-e: #c9dcf5; --t-ann: #e4e3dc;
+  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
+  --sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --surface: #161a20; --sunk: #1d232a; --fg: #e6e9ed; --muted: #9ba6b4; --line: #2c333c;
+    --accent: #7da9ff; --accent-soft: #1b283c; --mark: #5a4a12; --banner: #3a2f12; --banner-fg: #f3dc9c;
+    --v-unk: #7d848c; --t-d: #6b6a62; --t-x: #8a897f; --t-e: #3d5a80; --t-ann: #45443f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --surface: #161a20; --sunk: #1d232a; --fg: #e6e9ed; --muted: #9ba6b4; --line: #2c333c;
+  --accent: #7da9ff; --accent-soft: #1b283c; --mark: #5a4a12; --banner: #3a2f12; --banner-fg: #f3dc9c;
+  --v-unk: #7d848c; --t-d: #6b6a62; --t-x: #8a897f; --t-e: #3d5a80; --t-ann: #45443f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.75; }
+a { color: var(--accent); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { font: inherit; }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1180px; margin: 0 auto; padding: 10px 16px 6px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; }
+.brand { font-family: var(--serif); font-weight: 700; font-size: 1.2rem; color: var(--fg); text-decoration: none; flex: 1 1 300px; min-width: 0; line-height: 1.3; }
+.brand small { display: block; font-family: var(--sans); font-weight: 400; font-size: 12px; color: var(--muted); }
+.search { position: relative; flex: 0 1 300px; min-width: 0; }
+.search input { width: 100%; font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; }
+.qres { position: absolute; right: 0; left: 0; top: 40px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); max-height: 60vh; overflow: auto; z-index: 40; }
+.qres a { display: block; padding: 7px 12px; color: var(--fg); text-decoration: none; font-size: 14px; line-height: 1.4; }
+.qres a:hover, .qres a.on { background: var(--accent-soft); }
+.qres small { color: var(--muted); }
+.nav { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+.nav a { white-space: nowrap; font-size: 14px; color: var(--muted); text-decoration: none; padding: 7px 11px 9px; border-bottom: 3px solid transparent; }
+.nav a.on { color: var(--fg); font-weight: 700; border-bottom-color: var(--accent); }
+.nav a:hover { color: var(--fg); }
+.banner { background: var(--banner); color: var(--banner-fg); font-size: 13px; }
+.banner div { max-width: 1180px; margin: 0 auto; padding: 8px 16px; }
+main { max-width: 1180px; margin: 0 auto; padding: 0 16px 80px; }
+.page { max-width: 52em; padding-top: 22px; }
+.page.wide { max-width: none; }
+h1.ptitle { font-family: var(--serif); font-size: 1.75rem; line-height: 1.35; margin: 6px 0 10px; text-wrap: balance; }
+h2.stitle { font-family: var(--serif); font-size: 1.35rem; line-height: 1.4; margin: 26px 0 8px; text-wrap: balance; }
+.lead { color: var(--muted); font-size: 14px; margin: 0 0 14px; }
+.crumbs { font-size: 13px; color: var(--muted); }
+.crumbs a { color: var(--muted); }
+.prose p { margin: .7em 0; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose li { margin: .25em 0; }
+.prose h4 { margin: 1.4em 0 .4em; }
+.prose h2 { font-family: var(--serif); font-size: 1.25rem; margin: 1.6em 0 .5em; }
+.prose pre { background: var(--sunk); padding: 8px 10px; border-radius: 6px; overflow-x: auto; font-size: 12.5px; }
+.prose code { font-size: 12.5px; background: var(--sunk); padding: 0 3px; border-radius: 3px; }
+.subnav { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 18px; }
+.subnav a { font-size: 13px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--fg); text-decoration: none; background: var(--surface); line-height: 1.5; }
+.subnav a.on { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.pn { display: flex; justify-content: space-between; gap: 12px; margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; }
+.pn a { text-decoration: none; max-width: 48%; }
+.evb { font-size: 11px; line-height: 1; vertical-align: super; margin-left: 2px; padding: 2px 4px; border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 4px; cursor: pointer; }
+.evb:hover { background: var(--accent-soft); }
+.fig { margin: 1.4em 0; }
+.fig figcaption { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.fig img.static { display: none; }
+.fig.nochart img.static { display: block; width: 100%; max-width: 820px; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+.tbl-wrap { overflow-x: auto; margin: 1em 0 1.4em; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.tbl-wrap table, table.grid { border-collapse: collapse; width: 100%; font-size: 13px; line-height: 1.55; font-variant-numeric: tabular-nums; }
+.tbl-wrap th, table.grid th { background: var(--sunk); text-align: left; font-weight: 700; padding: 7px 10px; white-space: nowrap; }
+.tbl-wrap td, table.grid td { padding: 7px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+/* 图 */
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.panel + .panel { margin-top: 16px; }
+.panel h5 { margin: 0 0 6px; font-size: 13px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 8px; font-size: 12.5px; }
+.legend button { background: none; border: 0; color: var(--fg); display: inline-flex; align-items: center; gap: 5px; cursor: pointer; padding: 2px 0; }
+.legend button[aria-pressed="false"] { opacity: .35; }
+.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex: none; }
+.brow { display: grid; grid-template-columns: minmax(6em, 15em) minmax(0, 1fr); gap: 8px; align-items: center; padding: 2px 0; font-size: 13px; }
+.brow .lab { text-align: right; line-height: 1.3; overflow-wrap: anywhere; }
+.brow .lab a { color: var(--fg); }
+.track { position: relative; height: 20px; display: flex; align-items: center; }
+.bar { height: 14px; border-radius: 0 3px 3px 0; min-width: 1px; cursor: pointer; }
+.bar:hover, .seg:hover { filter: brightness(1.12); }
+.val { font-size: 12px; margin-left: 6px; white-space: nowrap; color: var(--fg); font-variant-numeric: tabular-nums; }
+.stackbar { display: flex; height: 14px; }
+.seg { height: 14px; cursor: pointer; border-right: 1px solid var(--surface); }
+.rng { position: absolute; height: 8px; top: 6px; border-radius: 4px; background: var(--t-c); cursor: pointer; }
+.dot { position: absolute; width: 10px; height: 10px; top: 5px; margin-left: -5px; border-radius: 50%; background: var(--fg); border: 2px solid var(--surface); }
+.axis { display: grid; grid-template-columns: minmax(6em, 15em) minmax(0, 1fr); gap: 8px; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.axis .ticks { display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 2px; }
+.tip { position: fixed; z-index: 60; pointer-events: none; background: var(--fg); color: var(--bg); font-size: 12.5px; line-height: 1.45; padding: 7px 10px; border-radius: 6px; max-width: 320px; }
+/* 名单 */
+.filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
+.filters label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); min-width: 0; }
+.filters select, .filters input { font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; max-width: 100%; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="false"] { opacity: .4; }
+.count { font-size: 13px; color: var(--muted); margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
+.gridwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table.grid tr.row { cursor: pointer; }
+table.grid tr.row:hover td { background: var(--accent-soft); }
+table.grid tr.detail td { background: var(--bg); }
+dl.kv { display: grid; grid-template-columns: 7em minmax(0, 1fr); gap: 4px 12px; margin: 4px 0; font-size: 13px; }
+dl.kv dt { color: var(--muted); }
+dl.kv dd { margin: 0; overflow-wrap: anywhere; }
+.quote { background: var(--bg); border-left: 3px solid var(--accent); padding: 6px 10px; margin: 4px 0; font-size: 13.5px; line-height: 1.7; overflow-wrap: anywhere; }
+.quote mark { background: var(--mark); color: var(--fg); padding: 0 1px; }
+.quote .ctx { color: var(--muted); }
+.tag { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.muted { color: var(--muted); }
+.pager { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin: 10px 0; font-size: 13px; }
+.pager button { font-size: 13px; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+.pager button:disabled { opacity: .4; cursor: default; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin: 12px 0; }
+.card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--fg); text-decoration: none; }
+.card:hover { border-color: var(--accent); }
+.card b { display: block; font-size: 14px; line-height: 1.4; }
+.card span { font-size: 12.5px; color: var(--muted); }
+.mini { display: flex; height: 6px; margin-top: 6px; border-radius: 3px; overflow: hidden; background: var(--sunk); }
+.loading { padding: 30px 0; color: var(--muted); }
+dialog.ev { border: 1px solid var(--line); border-radius: 10px; padding: 0; width: min(720px, calc(100vw - 32px)); max-height: 85vh; background: var(--surface); color: var(--fg); }
+dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
+.ev-in { padding: 16px 18px 18px; overflow: auto; max-height: 85vh; }
+.ev-in h3 { font-family: var(--serif); font-size: 1.1rem; margin: 0 26px 8px 0; line-height: 1.4; }
+.ev-x { position: absolute; top: 8px; right: 10px; background: none; border: 0; font-size: 20px; color: var(--muted); cursor: pointer; }
+@media (max-width: 700px) {
+  .brow, .axis { grid-template-columns: minmax(5em, 9em) minmax(0, 1fr); }
+  .search { flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#home" id="brand">拆开人形机器人<small>具身智能（人形机器人为主）产业链：A 股、港股、美股、其他交易所和没上市的公司</small></a>
+    <div class="search"><input id="q" type="search" placeholder="找公司或块，比如 宇树、PEEK、谐波" aria-label="找公司或块" autocomplete="off"><div class="qres" id="qres" hidden></div></div>
+  </div>
+  <nav class="nav" id="nav" aria-label="各部分"></nav>
+</header>
+<div class="banner" id="banner" hidden><div></div></div>
+<main id="view"><p class="loading">正在打开…</p></main>
+<div class="tip" id="tip" hidden></div>
+<dialog class="ev" id="ev"><button class="ev-x" id="ev-x" aria-label="关闭">×</button><div class="ev-in" id="ev-in"></div></dialog>
+
+<script>
+(function () {
+  'use strict';
+  const MODE = 'web';
+  const ROOT = '';
+  const $ = (s, el) => (el || document).querySelector(s);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const VCOL = { 'A股': 'var(--v-a)', '没上市': 'var(--v-unl)', '港股美股': 'var(--v-hkus)', '其他交易所': 'var(--v-oth)', '不明': 'var(--v-unk)',
+    '港股': 'var(--v-hkus)', '美股': 'var(--v-hkus)', '中国': 'var(--v-a)', '海外': 'var(--v-hkus)' };
+  const SCOL = { '量产': 'var(--t-a)', '对外销售': 'var(--t-b)', '试点或小批量': 'var(--t-c)', '只有展会页自述': 'var(--t-x)', '样机或研发': 'var(--t-e)', '只有宣布': 'var(--t-ann)' };
+  const TIER = { A: ['已量产或有收入', 'var(--t-a)'], B: ['送样或小批量', 'var(--t-b)'], C: ['研发或在建', 'var(--t-c)'], D: ['只是概念', 'var(--t-d)'] };
+  const PAGE = 50;
+  const cache = {};
+
+  function load(name) {
+    if (cache[name]) return cache[name];
+    const el = document.getElementById('d-' + name);
+    cache[name] = el ? Promise.resolve(JSON.parse(el.textContent))
+      : fetch('data/' + name + '.json').then((r) => { if (!r.ok) throw new Error(name + ' ' + r.status); return r.json(); });
+    return cache[name];
+  }
+  const view = $('#view');
+  let CORE, REPORT, COMP;
+
+  // ---------- 提示框和证据框 ----------
+  const tip = $('#tip');
+  function showTip(e, html) { tip.innerHTML = html; tip.hidden = false; moveTip(e); }
+  function moveTip(e) {
+    const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8), y = e.clientY + 16;
+    tip.style.left = x + 'px'; tip.style.top = (y + tip.offsetHeight > window.innerHeight ? e.clientY - tip.offsetHeight - 10 : y) + 'px';
+  }
+  function hideTip() { tip.hidden = true; }
+  const dlg = $('#ev');
+  $('#ev-x').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  function openEv(html) { $('#ev-in').innerHTML = html; if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
+  function localLink(p) {
+    if (MODE !== 'local' || !p) return '';
+    const full = p.startsWith('/') ? p : ROOT + p;
+    return `<dt>本地存档</dt><dd><a href="file://${encodeURI(full)}" target="_blank" rel="noopener">打开本机上的这份文件</a><br><span class="muted">${esc(p)}</span></dd>`;
+  }
+  function ctxHtml(ctx, fallback) {
+    if (ctx && ctx.length === 3) return `<div class="quote"><span class="ctx">…${esc(ctx[0])}</span><mark>${esc(ctx[1])}</mark><span class="ctx">${esc(ctx[2])}…</span></div>`;
+    return fallback ? `<div class="quote">${esc(fallback)}</div>` : '';
+  }
+  function showRef(rid) {
+    load('refs').then((R) => {
+      const r = R[rid]; if (!r) return;
+      const nums = r.nums && r.nums.length ? `<dt>这里引的数</dt><dd>${r.nums.map(esc).join('、')}</dd>` : '';
+      const body = r.ctx ? `<p class="muted" style="margin:0 0 4px;font-size:13px">原文里这个数前后的一段（从存档的文字里按数找到的）：</p>${ctxHtml(r.ctx)}`
+        : `<p class="muted" style="font-size:13px">这份文件的文字里没有自动找到这句话引的数${r.nums && r.nums.length ? '' : '（这句话没有引数）'}；请点原文核对。</p>`;
+      openEv(`<h3>${esc(r.label)}</h3>${body}<dl class="kv">${nums}<dt>原文</dt><dd><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a></dd>${localLink(r.local)}</dl>`);
+    });
+  }
+  document.addEventListener('click', (e) => { const b = e.target.closest('.evb'); if (b) { e.preventDefault(); showRef(b.dataset.ref); } });
+  function evRowHtml(r, withCompany) {
+    // r: [块, 公司序号, 档位, 关系, 原句, 上下文, 文件, 日期, 链接, 本地存档, 办法, 上市地原文]
+    const c = COMP.rows[r[1]], b = CORE.blocks[r[0]];
+    return `${withCompany ? `<h3><a href="#co-${r[1]}">${esc(c[0])}</a></h3>` : ''}${ctxHtml(r[5], r[4])}<dl class="kv">` +
+      `<dt>块</dt><dd><a href="#blk-${esc(r[0])}">${esc(r[0])} ${esc(b ? b.name : '')}</a></dd><dt>档位</dt><dd>${r[2]} ${TIER[r[2]][0]}</dd>` +
+      `<dt>和机器人</dt><dd>${esc(r[3])}</dd><dt>文件</dt><dd>${esc(r[6])}${r[7] ? '（' + esc(r[7]) + '）' : ''}</dd>` +
+      `<dt>原文</dt><dd>${r[8] ? `<a href="${esc(r[8])}" target="_blank" rel="noopener">${esc(r[8])}</a>` : '<span class="muted">没有链接</span>'}</dd>${localLink(r[9])}</dl>`;
+  }
+
+  // ---------- 图 ----------
+  function colorOf(kind, key) { return kind === 'stage' ? (SCOL[key] || 'var(--t-e)') : kind === 'none' ? 'var(--accent)' : (VCOL[key] || 'var(--v-unk)'); }
+  function srcList(src) { return (src || []).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">出处 ${i + 1}</a>`).join('　'); }
+  function drawChart(box, spec) {
+    box.innerHTML = '';
+    if (spec.kind === 'bars') drawBars(box, spec);
+    else if (spec.kind === 'stack') drawStack(box, spec);
+    else if (spec.kind === 'range') drawRange(box, spec);
+  }
+  function legendHtml(items) { return `<div class="legend">${items.map(([k, c]) => `<span class="tag"><span class="sw" style="background:${c}"></span>${esc(k)}</span>`).join('')}</div>`; }
+  function drawBars(box, spec) {
+    const keys = [...new Set(spec.panels.flatMap((p) => p.bars.map((b) => b.color)).filter(Boolean))];
+    if (spec.color !== 'none' && keys.length) box.insertAdjacentHTML('beforeend', legendHtml(keys.map((k) => [k, colorOf(spec.color, k)])));
+    spec.panels.forEach((p) => {
+      const max = Math.max(...p.bars.map((b) => b.value), 0) || 1;
+      const div = document.createElement('div'); div.className = 'panel';
+      div.innerHTML = (p.title ? `<h5>${esc(p.title)}</h5>` : '') + p.bars.map((b, i) =>
+        `<div class="brow"><div class="lab">${b.group ? `<span class="muted">${esc(b.group)}　</span>` : ''}${esc(b.label)}</div>` +
+        `<div class="track"><div class="bar" data-i="${i}" style="width:${(b.value / max * 82).toFixed(2)}%;background:${colorOf(spec.color, b.color)}"></div><span class="val">${esc(b.text)}</span></div></div>`).join('');
+      div.querySelectorAll('.bar').forEach((el) => {
+        const b = p.bars[+el.dataset.i];
+        const t = `<b>${esc(b.label)}</b>：${esc(b.text)}<br>${esc(b.nature || '')}${b.year ? '，' + esc(b.year) : ''}${b.scope ? '<br>' + esc(b.scope) : ''}<br><span style="opacity:.7">点一下看出处</span>`;
+        el.addEventListener('mousemove', (e) => showTip(e, t)); el.addEventListener('mouseleave', hideTip);
+        el.addEventListener('click', () => { hideTip(); openEv(`<h3>${esc(b.label)}：${esc(b.text)}</h3><dl class="kv"><dt>性质</dt><dd>${esc(b.nature || '')}</dd>${b.year ? `<dt>年份</dt><dd>${esc(b.year)}</dd>` : ''}${b.scope ? `<dt>范围</dt><dd>${esc(b.scope)}</dd>` : ''}${p.title ? `<dt>这张小图</dt><dd>${esc(p.title)}</dd>` : ''}<dt>出处</dt><dd>${srcList(b.src) || '<span class="muted">没有链接</span>'}</dd></dl>`); });
+      });
+      box.appendChild(div);
+    });
+  }
+  function drawStack(box, spec) {
+    const on = spec.series.map(() => true);
+    const kind = spec.color || (spec.unit === '%' ? 'series' : 'venue');
+    const pal = ['var(--t-a)', 'var(--v-hkus)', 'var(--v-oth)', 'var(--v-unl)', 'var(--t-c)', 'var(--v-unk)'];
+    const col = (s, i) => kind === 'series' ? pal[i % pal.length] : colorOf(kind, s.name);
+    const leg = document.createElement('div'); leg.className = 'legend';
+    leg.innerHTML = spec.series.map((s, i) => `<button aria-pressed="true" data-i="${i}"><span class="sw" style="background:${col(s, i)}"></span>${esc(s.name)}</button>`).join('');
+    box.appendChild(leg);
+    const body = document.createElement('div'); box.appendChild(body);
+    function render() {
+      const tot = spec.categories.map((_, j) => spec.series.reduce((a, s, i) => a + (on[i] ? s.values[j] : 0), 0));
+      const max = spec.unit === '%' ? Math.max(...tot, 100) : Math.max(...tot, 1);
+      body.innerHTML = spec.categories.map((c, j) => {
+        const lab = spec.links ? `<a href="#${esc(spec.links[j])}">${esc(c)}</a>` : esc(c);
+        const segs = spec.series.map((s, i) => on[i] && s.values[j] ? `<div class="seg" data-i="${i}" data-j="${j}" style="width:${(s.values[j] / max * 82).toFixed(3)}%;background:${col(s, i)}"></div>` : '').join('');
+        return `<div class="brow"><div class="lab">${lab}</div><div class="track"><div class="stackbar" style="width:100%">${segs}<span class="val">${spec.unit === '%' ? '' : tot[j].toLocaleString()}</span></div></div></div>`;
+      }).join('');
+      body.querySelectorAll('.seg').forEach((el) => {
+        const s = spec.series[+el.dataset.i], j = +el.dataset.j, v = s.values[j];
+        const t = `<b>${esc(spec.categories[j])}</b><br>${esc(s.name)}：${v.toLocaleString()}${spec.unit === '%' ? '%' : ' ' + esc(spec.unit || '')}` +
+          (spec.links ? '<br><span style="opacity:.7">点一下打开这一块</span>' : spec.src ? '<br><span style="opacity:.7">点一下看出处</span>' : '');
+        el.addEventListener('mousemove', (e) => showTip(e, t)); el.addEventListener('mouseleave', hideTip);
+        el.addEventListener('click', () => {
+          hideTip();
+          if (spec.links) location.hash = spec.links[j];
+          else if (spec.src) openEv(`<h3>${esc(spec.categories[j])}</h3><dl class="kv"><dt>${esc(s.name)}</dt><dd>${v}${spec.unit === '%' ? '%' : ''}</dd><dt>性质</dt><dd>${esc((spec.nature || [])[j] || '')}</dd><dt>出处</dt><dd>${srcList(spec.src[j])}</dd></dl>`);
+        });
+      });
+    }
+    leg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.i; on[i] = !on[i]; b.setAttribute('aria-pressed', String(on[i])); render(); }));
+    render();
+  }
+  function drawRange(box, spec) {
+    spec.panels.forEach((p) => {
+      const vals = p.rows.flatMap((r) => [r.low, r.high, ...(r.points || []).map((x) => x.value)]).filter((v) => v != null);
+      const max = Math.max(...vals) * 1.05, min = 0;
+      const pos = (v) => ((v - min) / (max - min) * 100).toFixed(2) + '%';
+      const div = document.createElement('div'); div.className = 'panel';
+      div.innerHTML = (p.title ? `<h5>${esc(p.title)}</h5>` : '') + p.rows.map((r, i) =>
+        `<div class="brow"><div class="lab">${esc(r.label)}</div><div class="track"><div class="rng" data-i="${i}" style="left:${pos(r.low)};width:calc(${pos(r.high)} - ${pos(r.low)} + 2px)"></div>` +
+        (r.points || []).map((x) => `<span class="dot" style="left:${pos(x.value)}" title="${esc(x.name)} ${x.value.toLocaleString()}"></span>`).join('') + '</div></div>').join('') +
+        `<div class="axis"><div></div><div class="ticks"><span>0</span><span>${Math.round(max / 2).toLocaleString()}</span><span>${Math.round(max).toLocaleString()} ${esc(p.unit || '')}</span></div></div>`;
+      div.querySelectorAll('.rng').forEach((el) => {
+        const r = p.rows[+el.dataset.i];
+        const t = `<b>${esc(r.label)}</b>：${r.low.toLocaleString()}–${r.high.toLocaleString()} ${esc(p.unit || '')}<br>${esc(r.nature || '')}${(r.points || []).map((x) => '<br>' + esc(x.name) + ' ' + x.value.toLocaleString()).join('')}<br><span style="opacity:.7">点一下看出处</span>`;
+        el.addEventListener('mousemove', (e) => showTip(e, t)); el.addEventListener('mouseleave', hideTip);
+        el.addEventListener('click', () => { hideTip(); openEv(`<h3>${esc(r.label)}</h3>${(r.notes || []).map((n) => `<div class="quote">${esc(n)}</div>`).join('')}<dl class="kv"><dt>区间</dt><dd>${r.low.toLocaleString()}–${r.high.toLocaleString()} ${esc(p.unit || '')}</dd><dt>性质</dt><dd>${esc(r.nature || '')}</dd><dt>出处</dt><dd>${srcList(r.src)}</dd></dl>`); });
+      });
+      box.appendChild(div);
+    });
+  }
+  function mountCharts(root) {
+    root.querySelectorAll('figure.fig[data-chart]').forEach((f) => {
+      const spec = CORE.charts[f.dataset.chart];
+      if (spec) drawChart($('.chart', f), spec); else f.classList.add('nochart');
+    });
+  }
+
+  // ---------- 页面 ----------
+  const NAVS = () => [['home', '结论']].concat(CORE.sections.slice(1).map((s) => [s.id, s.title.split(/[：:]/)[0]])).concat([['list', '公司名单'], ['robots', '整机厂名单']]).concat(CORE.has_guide ? [['guide', '资料索引']] : []);
+  function setNav(id) {
+    $('#nav').innerHTML = NAVS().map(([k, t]) => `<a href="#${k}" class="${id === k || (id.startsWith(k + '-') && k !== 'home') ? 'on' : ''}">${esc(t)}</a>`).join('');
+  }
+  function sectionPage(sid, subid) {
+    const sec = REPORT[sid], meta = CORE.sections.find((s) => s.id === sid);
+    if (!sec) return notFound();
+    const subs = sec.subs, cur = subs.find((s) => s.id === subid) || null;
+    let html = `<div class="page"><h1 class="ptitle">${esc(sec.title)}</h1>`;
+    if (!cur) html += `<div class="prose">${sec.intro}</div>`;
+    if (subs.length) {
+      html += `<h2 class="stitle" style="font-size:1rem;margin-top:22px">${cur ? '本部分的小节' : '分成这几小节，点开看'}</h2><div class="subnav">` +
+        subs.map((s) => `<a href="#${s.id}" class="${cur && cur.id === s.id ? 'on' : ''}">${esc(s.title.split(/[：:]/)[0])}</a>`).join('') + '</div>';
+    }
+    if (cur) {
+      html += `<h2 class="stitle">${esc(cur.title)}</h2><div class="prose">${cur.html}</div>`;
+      const big = sid === CORE.sections[1].id ? CORE.bigs.find((g) => cur.title.startsWith(g.id + ' ')) : null;
+      if (big) html += `<p><a href="#big-${big.id}">看「${esc(big.name)}」每一块的公司名单和证据 →</a></p>`;
+      const i = subs.indexOf(cur), prev = subs[i - 1], next = subs[i + 1];
+      html += `<div class="pn"><span>${prev ? `<a href="#${prev.id}">← ${esc(prev.title.split(/[：:]/)[0])}</a>` : `<a href="#${sid}">← ${esc(sec.title.split(/[：:]/)[0])}</a>`}</span>` +
+        `<span>${next ? `<a href="#${next.id}">${esc(next.title.split(/[：:]/)[0])} →</a>` : ''}</span></div>`;
+    } else if (subs.length) {
+      html += `<div class="pn"><span></span><a href="#${subs[0].id}">从第一小节开始：${esc(subs[0].title.split(/[：:]/)[0])} →</a></div>`;
+    }
+    view.innerHTML = html + '</div>';
+    mountCharts(view);
+  }
+  function home() {
+    const s1 = REPORT[CORE.sections[0].id];
+    const va = CORE.venues_all;
+    view.innerHTML = `<div class="page"><h1 class="ptitle">${esc(CORE.title)}</h1>` +
+      `<p class="lead">确认在做的公司 ${CORE.n_conf.toLocaleString()} 家：A 股 ${(va['A股'] || 0).toLocaleString()}，没上市 ${(va['没上市'] || 0).toLocaleString()}，港股美股 ${(va['港股美股'] || 0).toLocaleString()}，其他交易所 ${(va['其他交易所'] || 0).toLocaleString()}，不明 ${(va['不明'] || 0).toLocaleString()}。生成于 ${esc(CORE.built)}。</p>` +
+      `<div class="prose">${s1.intro}${s1.subs.map((s) => `<h2 class="stitle">${esc(s.title)}</h2>${s.html}`).join('')}</div>` +
+      `<h2 class="stitle">往下看</h2><div class="cards">${CORE.sections.slice(1).map((s) => `<a class="card" href="#${s.id}"><b>${esc(s.title)}</b><span>${s.subs.length ? s.subs.length + ' 小节' : ''}</span></a>`).join('')}` +
+      `<a class="card" href="#list"><b>各块公司名单</b><span>按块、档位、上市地筛选，每行有证据</span></a><a class="card" href="#robots"><b>整机厂名单</b><span>一家整机厂的一种类型一行</span></a></div></div>`;
+  }
+  function vbar(counts) {
+    const tot = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+    return `<div class="mini">${['A股', '没上市', '港股美股', '其他交易所', '不明'].map((v) => counts[v] ? `<span style="width:${counts[v] / tot * 100}%;background:${VCOL[v]}"></span>` : '').join('')}</div>`;
+  }
+  function bigPage(gid) {
+    const g = CORE.bigs.find((x) => x.id === gid); if (!g) return notFound();
+    const name = Object.keys(CORE.charts).find((k) => /^r4_\d\d_/.test(k) && k.endsWith('_' + gid));
+    let html = `<div class="page wide"><p class="crumbs"><a href="#${CORE.sections[1].id}">产业链地图</a></p><h1 class="ptitle">${esc(g.name)}</h1>` +
+      `<p class="lead">${g.blocks.length} 块，确认在做的公司 ${g.n.toLocaleString()} 家（一家在几块只算一次）。点一块看名单和证据。</p>` +
+      (name ? `<figure class="fig" data-chart="${esc(name)}"><figcaption>每块确认在做的公司，按上市地分（点块名打开）</figcaption><div class="chart"></div></figure>` : '') +
+      `<div class="cards">${g.blocks.map((b) => { const B = CORE.blocks[b], c = B.counts; const conf = {}; ['A', 'B', 'C'].forEach((t) => Object.entries(c[t] || {}).forEach(([v, n]) => { conf[v] = (conf[v] || 0) + n; }));
+        const n = Object.values(conf).reduce((a, x) => a + x, 0), d = Object.values(c.D || {}).reduce((a, x) => a + x, 0);
+        return `<a class="card" href="#blk-${b}"><b>${b} ${esc(B.name)}</b><span>确认在做 ${n} 家${d ? `，只是概念 ${d} 家` : ''}</span>${vbar(conf)}</a>`; }).join('')}</div></div>`;
+    view.innerHTML = html; mountCharts(view);
+  }
+  function tierChips(state, redraw) {
+    const box = document.createElement('div'); box.className = 'chips';
+    box.innerHTML = Object.entries(TIER).map(([k, v]) => `<button class="chip" aria-pressed="${state.has(k)}" data-t="${k}"><span class="sw" style="background:${v[1]}"></span>${k} ${v[0]}</button>`).join('');
+    box.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { const t = b.dataset.t; state.has(t) ? state.delete(t) : state.add(t); b.setAttribute('aria-pressed', String(state.has(t))); redraw(); }));
+    return box;
+  }
+  function pager(box, page, pages, go) {
+    box.innerHTML = '';
+    if (pages <= 1) return;
+    const mk = (t, dis, f) => { const b = document.createElement('button'); b.textContent = t; b.disabled = dis; b.onclick = f; return b; };
+    const s = document.createElement('span'); s.textContent = `第 ${page + 1} / ${pages} 页`;
+    box.append(mk('上一页', page === 0, () => go(page - 1)), s, mk('下一页', page >= pages - 1, () => go(page + 1)));
+  }
+  function evTable(holder, rows, opts) {
+    // 通用名单表：rows 是证据行；可筛档位、上市地、搜索
+    const st = { tiers: new Set(['A', 'B', 'C', 'D']), ven: '', q: '', blk: opts.blk || '', page: 0 };
+    holder.innerHTML = `<div class="filters">${opts.blocks ? `<label>块<select class="f-blk"><option value="">全部</option>${opts.blocks.map((b) => `<option value="${b}">${b} ${esc(CORE.blocks[b].name)}</option>`).join('')}</select></label>` : ''}` +
+      `<label>上市地<select class="f-ven"><option value="">全部</option>${['A股', '没上市', '港股美股', '其他交易所', '不明'].map((v) => `<option>${v}</option>`).join('')}</select></label>` +
+      `<div><div class="muted" style="font-size:12px;margin-bottom:3px">档位</div><div class="f-tier"></div></div>` +
+      `<label style="flex:1 1 14em">搜索公司或证据<input type="search" class="f-q" placeholder="公司名、产品、原句里的词"></label></div>` +
+      `<div class="count"></div><div class="gridwrap"><table class="grid"><thead><tr>${opts.blocks ? '<th>块</th>' : ''}<th>公司</th><th>上市地</th><th>档位</th><th>和机器人的关系</th></tr></thead><tbody></tbody></table></div><div class="pager"></div>`;
+    $('.f-tier', holder).appendChild(tierChips(st.tiers, () => { st.page = 0; draw(); }));
+    if (opts.blocks) $('.f-blk', holder).addEventListener('change', (e) => { st.blk = e.target.value; st.page = 0; draw(); });
+    $('.f-ven', holder).addEventListener('change', (e) => { st.ven = e.target.value; st.page = 0; draw(); });
+    let t; $('.f-q', holder).addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { st.q = e.target.value.trim().toLowerCase(); st.page = 0; draw(); }, 200); });
+    const ncol = opts.blocks ? 5 : 4;
+    function draw() {
+      const rs = rows.filter((r) => {
+        const c = COMP.rows[r[1]];
+        if (st.blk && r[0] !== st.blk) return false;
+        if (!st.tiers.has(r[2])) return false;
+        if (st.ven && c[1] !== st.ven) return false;
+        if (st.q && !(c[0] + ' ' + (c[4] || []).join(' ') + ' ' + r[3] + ' ' + r[4]).toLowerCase().includes(st.q)) return false;
+        return true;
+      });
+      const firms = new Set(rs.filter((r) => r[2] !== 'D').map((r) => r[1])).size;
+      $('.count', holder).textContent = `${rs.length.toLocaleString()} 行；确认在做（A–C）的公司 ${firms.toLocaleString()} 家`;
+      const pages = Math.max(1, Math.ceil(rs.length / PAGE)); st.page = Math.min(st.page, pages - 1);
+      const part = rs.slice(st.page * PAGE, st.page * PAGE + PAGE);
+      const tb = $('tbody', holder);
+      tb.innerHTML = part.length ? part.map((r, i) => { const c = COMP.rows[r[1]];
+        return `<tr class="row" data-i="${i}">${opts.blocks ? `<td><span class="muted">${esc(r[0])}</span> ${esc(CORE.blocks[r[0]].name)}</td>` : ''}<td><a href="#co-${r[1]}">${esc(c[0])}</a></td>` +
+          `<td><span class="tag"><span class="sw" style="background:${VCOL[c[1]] || 'var(--v-unk)'}"></span>${esc(c[1])}</span></td><td><span class="tag"><span class="sw" style="background:${TIER[r[2]][1]}"></span>${r[2]}</span></td><td>${esc(r[3])}</td></tr>`; }).join('')
+        : `<tr><td colspan="${ncol}" class="loading">没有符合条件的行。</td></tr>`;
+      tb.querySelectorAll('tr.row').forEach((tr) => tr.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        const nx = tr.nextElementSibling;
+        if (nx && nx.classList.contains('detail')) { nx.remove(); return; }
+        tr.insertAdjacentHTML('afterend', `<tr class="detail"><td colspan="${ncol}">${evRowHtml(part[+tr.dataset.i], false)}</td></tr>`);
+      }));
+      pager($('.pager', holder), st.page, pages, (p) => { st.page = p; draw(); holder.scrollIntoView(); });
+    }
+    draw();
+  }
+  function blockPage(bid) {
+    const B = CORE.blocks[bid]; if (!B) return notFound();
+    const g = CORE.bigs.find((x) => x.id === B.big);
+    view.innerHTML = `<div class="page wide"><p class="crumbs"><a href="#${CORE.sections[1].id}">产业链地图</a> › <a href="#big-${g.id}">${esc(g.name)}</a></p>` +
+      `<h1 class="ptitle">${esc(bid)} ${esc(B.name)}</h1><dl class="kv" style="max-width:60em"><dt>这一块是什么</dt><dd>${esc(B.product || '')}</dd><dt>收哪些公司</dt><dd>${esc(B.rule || '')}</dd><dt>层</dt><dd>${esc(B.layer)}</dd></dl>` +
+      `<div id="bt"><p class="loading">正在读这一块的名单…</p></div></div>`;
+    load('ev_' + B.big).then((E) => evTable($('#bt'), E.rows.filter((r) => r[0] === bid), {}));
+  }
+  function companyPage(i) {
+    const c = COMP.rows[i]; if (!c) return notFound();
+    const bigsOf = [...new Set(c[5].map(([b]) => CORE.blocks[b] && CORE.blocks[b].big).filter(Boolean))];
+    view.innerHTML = `<div class="page"><h1 class="ptitle">${esc(c[0])}</h1><dl class="kv"><dt>上市地</dt><dd><span class="tag"><span class="sw" style="background:${VCOL[c[1]] || 'var(--v-unk)'}"></span>${esc(c[1])}</span>　${esc(c[2])}</dd>` +
+      `${c[3] ? `<dt>代码</dt><dd>${esc(c[3])}</dd>` : ''}${(c[4] || []).length ? `<dt>别的写法</dt><dd>${c[4].map(esc).join('；')}</dd>` : ''}<dt>在哪几块</dt><dd>${c[5].map(([b, t]) => `<a href="#blk-${b}">${b} ${esc(CORE.blocks[b] ? CORE.blocks[b].name : '')}</a>（${t}）`).join('、')}</dd></dl>` +
+      `<h2 class="stitle">每一块的证据</h2><div id="cev"><p class="loading">正在读证据…</p></div></div>`;
+    Promise.all(bigsOf.map((g) => load('ev_' + g))).then((Es) => {
+      const rs = Es.flatMap((E) => E.rows.filter((r) => r[1] === i)).sort((a, b) => a[2].localeCompare(b[2]) || a[0].localeCompare(b[0]));
+      $('#cev').innerHTML = rs.map((r) => `<div style="margin:0 0 18px"><h3 style="font-size:15px;margin:0 0 4px"><a href="#blk-${r[0]}">${esc(r[0])} ${esc(CORE.blocks[r[0]].name)}</a>　<span class="tag"><span class="sw" style="background:${TIER[r[2]][1]}"></span>${r[2]} ${TIER[r[2]][0]}</span></h3>${evRowHtml(r, false)}</div>`).join('');
+    });
+  }
+  function listPage() {
+    view.innerHTML = `<div class="page wide"><h1 class="ptitle">各块公司名单</h1><p class="lead">每块每家一行，含“只是概念”。点公司名打开这家公司的全部证据；点一行展开这一行的证据原句、上下文和出处。</p><div id="lt"><p class="loading">正在读名单（第一次要几秒）…</p></div></div>`;
+    Promise.all(CORE.bigs.map((g) => load('ev_' + g.id).catch(() => ({ rows: [] })))).then((Es) => {
+      evTable($('#lt'), Es.flatMap((E) => E.rows), { blocks: Object.keys(CORE.blocks) });
+    });
+  }
+  function robotsPage() {
+    view.innerHTML = `<div class="page wide"><h1 class="ptitle">整机厂名单</h1><p class="lead">一行是一家整机厂的一种类型。走到哪一步按公司自己的文件、官网、发布会原文定；“不做整机”的是查过、只投资、合作或做平台的。点一行展开原句、出货、价格和出处。</p><div id="rt"><p class="loading">正在读名单…</p></div></div>`;
+    load('robots').then((R) => {
+      const C = {}; R.cols.forEach((c, i) => { C[c] = i; });
+      const stg = (r) => r[C['阶段']] || ((/^(量产|对外销售|试点或小批量|样机或研发|只有宣布|不做整机)/.exec(r[C['现在走到哪一步']] || '') || [])[1] || '');
+      R.rows.forEach((r) => { r._s = stg(r); r._r = r[C['地区']] || '其他'; r._g = r[C['资料完整度']] || ''; });
+      const st = { reg: '', typ: '', stg: '', own: '', grd: '', q: '', page: 0 };
+      const GN = { '甲': '甲 公司文件里有台数或收入', '乙': '乙 官网或公司文件有说法、没有数', '丙': '丙 只有展会页或名录', '丁': '丁 只有媒体' };
+      const opt = (vals) => vals.map((v) => `<option>${esc(v)}</option>`).join('');
+      $('#rt').innerHTML = `<div class="filters"><label>地区<select data-k="reg"><option value="">全部</option>${opt(['中国', '美国', '欧洲', '日本', '韩国', '其他'].filter((v) => R.rows.some((r) => r._r === v)))}</select></label>` +
+        `<label>类型<select data-k="typ"><option value="">全部</option>${opt([...new Set(R.rows.map((r) => r[C['类型']]))].sort())}</select></label>` +
+        `<label>走到哪一步<select data-k="stg"><option value="">全部</option>${opt(['量产', '对外销售', '试点或小批量', '只有展会页自述', '样机或研发', '只有宣布', '不做整机'].filter((v) => R.rows.some((r) => r._s === v)))}</select></label>` +
+        `<label>资料完整度<select data-k="grd"><option value="">全部</option>${['甲', '乙', '丙', '丁'].filter((v) => R.rows.some((r) => r._g === v)).map((v) => `<option value="${v}">${esc(GN[v])}</option>`).join('')}</select></label>` +
+        `<label>所有者<select data-k="own"><option value="">全部</option>${opt([...new Set(R.rows.map((r) => r[C['所有者类型']]))].filter(Boolean).sort())}</select></label>` +
+        `<label style="flex:1 1 14em">搜索<input type="search" data-k="q" placeholder="比如 小米、Optimus、四足"></label></div><div class="count"></div>` +
+        `<div class="gridwrap"><table class="grid"><thead><tr><th>整机厂（点名字看它的机器人）</th><th>所有者（上市地）</th><th>类型</th><th>型号</th><th>走到哪一步</th><th>资料</th><th>证据日期</th></tr></thead><tbody></tbody></table></div><div class="pager"></div>`;
+      $('#rt').querySelectorAll('[data-k]').forEach((el) => el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', (e) => { st[el.dataset.k] = el.tagName === 'INPUT' ? e.target.value.trim().toLowerCase() : e.target.value; st.page = 0; draw(); }));
+      function draw() {
+        const rs = R.rows.filter((r) => (!st.reg || r._r === st.reg) && (!st.typ || r[C['类型']] === st.typ) && (!st.stg || r._s === st.stg) && (!st.grd || r._g === st.grd) && (!st.own || r[C['所有者类型']] === st.own) && (!st.q || r.join(' ').toLowerCase().includes(st.q)));
+        $('#rt .count').textContent = `${rs.length.toLocaleString()} 行，${new Set(rs.map((r) => r[C['整机厂']])).size.toLocaleString()} 家整机厂`;
+        const pages = Math.max(1, Math.ceil(rs.length / PAGE)); st.page = Math.min(st.page, pages - 1);
+        const part = rs.slice(st.page * PAGE, st.page * PAGE + PAGE);
+        const tb = $('#rt tbody');
+        const pg = (r) => (C['机器人页面'] != null && r[C['机器人页面']]) || (C['官网首页'] != null && r[C['官网首页']]) || '';
+        tb.innerHTML = part.map((r, i) => `<tr class="row" data-i="${i}"><td>${pg(r) ? `<a href="${esc(pg(r))}" target="_blank" rel="noopener">${esc(r[C['整机厂']])}</a>` : esc(r[C['整机厂']])}</td><td>${esc(r[C['所有者或母公司']])}<br><span class="muted">${esc(r[C['母公司上市地和代码']])}</span></td><td>${esc(r[C['类型']])}</td><td>${esc(r[C['型号']])}</td><td>${esc(r._s)}</td><td title="${esc(GN[r._g] || '')}">${esc(r._g)}</td><td>${esc(r[C['证据日期']])}</td></tr>`).join('') || '<tr><td colspan="7" class="loading">没有符合条件的行。</td></tr>';
+        tb.querySelectorAll('tr.row').forEach((tr) => tr.addEventListener('click', () => {
+          const nx = tr.nextElementSibling; if (nx && nx.classList.contains('detail')) { nx.remove(); return; }
+          const r = part[+tr.dataset.i], us = (r[C['出处链接']] || '').match(/https?:\/\/[^\s；;，,）)|]+/g) || [];
+          tr.insertAdjacentHTML('afterend', `<tr class="detail"><td colspan="7"><div class="quote">${esc(r[C['这一步的证据原句']])}</div><dl class="kv"><dt>品牌或产品</dt><dd>${esc(r[C['品牌或产品']])}</dd><dt>国家</dt><dd>${esc(r[C['国家']])}</dd>` +
+            `<dt>出货或产量</dt><dd>${esc(r[C['出货或产量（年份、数、性质）']])}</dd><dt>价格</dt><dd>${esc(r[C['价格（性质）']])}</dd><dt>客户或部署</dt><dd>${esc(r[C['客户或部署']])}</dd>` +
+            `<dt>资料完整度</dt><dd>${esc(GN[r._g] || '')}</dd><dt>机器人页面</dt><dd>${C['机器人页面'] != null && r[C['机器人页面']] ? `<a href="${esc(r[C['机器人页面']])}" target="_blank" rel="noopener">${esc(r[C['机器人页面']])}</a>` : '<span class="muted">还没找到</span>'}</dd>` +
+            `${C['投资者关系页'] != null && r[C['投资者关系页']] ? `<dt>投资者关系页</dt><dd><a href="${esc(r[C['投资者关系页']])}" target="_blank" rel="noopener">${esc(r[C['投资者关系页']])}</a></dd>` : ''}` +
+            `<dt>出处</dt><dd>${srcList(us) || '<span class="muted">没有链接</span>'}</dd>${C['本地副本'] != null ? localLink((r[C['本地副本']] || '').split(/[；;]/)[0].trim()) : ''}</dl></td></tr>`);
+        }));
+        pager($('#rt .pager'), st.page, pages, (p) => { st.page = p; draw(); $('#rt').scrollIntoView(); });
+      }
+      draw();
+    });
+  }
+  function guidePage() {
+    view.innerHTML = '<div class="page"><h1 class="ptitle">资料索引和维护办法</h1><div class="prose" id="gd"><p class="loading">正在读…</p></div></div>';
+    load('guide').then((g) => { $('#gd').innerHTML = g.html; });
+  }
+  function notFound() { view.innerHTML = '<div class="page"><h1 class="ptitle">没有这一页</h1><p><a href="#home">回到结论</a></p></div>'; }
+
+  function route() {
+    const h = decodeURIComponent(location.hash.slice(1)) || 'home';
+    hideTip(); $('#qres').hidden = true;
+    setNav(h);
+    if (h === 'home') home();
+    else if (/^s\d+$/.test(h)) sectionPage(h, null);
+    else if (/^s\d+-\d+$/.test(h)) sectionPage(h.split('-')[0], h);
+    else if (h.startsWith('big-')) bigPage(h.slice(4));
+    else if (h.startsWith('blk-')) blockPage(h.slice(4));
+    else if (h.startsWith('co-')) companyPage(+h.slice(3));
+    else if (h === 'list') listPage();
+    else if (h === 'robots') robotsPage();
+    else if (h === 'guide') guidePage();
+    else notFound();
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- 搜索 ----------
+  let INDEX = null;
+  const q = $('#q'), qres = $('#qres');
+  q.addEventListener('input', () => {
+    const s = q.value.trim().toLowerCase();
+    if (!s) { qres.hidden = true; return; }
+    if (!INDEX) {
+      INDEX = Object.entries(CORE.blocks).map(([b, B]) => ({ t: `${b} ${B.name}`, k: (b + ' ' + B.name + ' ' + B.product).toLowerCase(), h: 'blk-' + b, m: '块' }))
+        .concat(COMP.rows.map((c, i) => ({ t: c[0], k: (c[0] + ' ' + (c[4] || []).join(' ') + ' ' + c[3]).toLowerCase(), h: 'co-' + i, m: c[1] + '，' + c[5].length + ' 块' })));
+    }
+    const hits = INDEX.filter((x) => x.k.includes(s)).sort((a, b) => (a.k.indexOf(s) - b.k.indexOf(s)) || a.t.length - b.t.length).slice(0, 14);
+    qres.innerHTML = hits.length ? hits.map((x) => `<a href="#${esc(x.h)}">${esc(x.t)} <small>${esc(x.m)}</small></a>`).join('') : '<a>没有找到</a>';
+    qres.hidden = false;
+  });
+  q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const a = $('a[href]', qres); if (a) { location.hash = a.getAttribute('href'); q.blur(); } } });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.search')) qres.hidden = true; });
+  qres.addEventListener('click', () => { q.value = ''; qres.hidden = true; });
+
+  Promise.all([load('core'), load('report'), load('companies')]).then(([c, r, comp]) => {
+    CORE = c; REPORT = r; COMP = comp;
+    if (CORE.preview) { $('#banner').hidden = false; $('#banner div').textContent = CORE.preview; }
+    window.addEventListener('hashchange', route);
+    route();
+  }).catch((e) => { view.innerHTML = `<div class="page"><p>数据没读出来（${esc(e.message)}）。刷新页面再试一次。</p></div>`; });
+})();
+</script>

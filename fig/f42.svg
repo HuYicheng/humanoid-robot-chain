@@ -1,0 +1,973 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="740.266297pt" height="387.43296pt" viewBox="0 0 740.266297 387.43296" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-20T00:42:41.129688</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 387.43296 
+L 740.266297 387.43296 
+L 740.266297 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 133.0815 318.72168 
+L 333.583195 318.72168 
+L 333.583195 2.88 
+L 133.0815 2.88 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 147.933477 318.72168 
+L 147.933477 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2">
+      <defs>
+       <path id="macbaba13c2" d="M 0 0 
+L 0 3.5 
+" style="stroke: #52514e; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#macbaba13c2" x="147.933477" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="147.933477" y="331.691211" transform="rotate(-0 147.933477 331.691211)">−60</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 177.637432 318.72168 
+L 177.637432 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#macbaba13c2" x="177.637432" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="177.637432" y="331.691211" transform="rotate(-0 177.637432 331.691211)">−40</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 207.341387 318.72168 
+L 207.341387 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#macbaba13c2" x="207.341387" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="207.341387" y="331.691211" transform="rotate(-0 207.341387 331.691211)">−20</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 237.045342 318.72168 
+L 237.045342 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#macbaba13c2" x="237.045342" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="237.045342" y="331.691211" transform="rotate(-0 237.045342 331.691211)">0</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 266.749297 318.72168 
+L 266.749297 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#macbaba13c2" x="266.749297" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="266.749297" y="331.691211" transform="rotate(-0 266.749297 331.691211)">20</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_11">
+      <path d="M 296.453251 318.72168 
+L 296.453251 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#macbaba13c2" x="296.453251" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="296.453251" y="331.691211" transform="rotate(-0 296.453251 331.691211)">40</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_13">
+      <path d="M 326.157206 318.72168 
+L 326.157206 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#macbaba13c2" x="326.157206" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="326.157206" y="331.691211" transform="rotate(-0 326.157206 331.691211)">60</text>
+     </g>
+    </g>
+    <g id="text_8">
+     <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="233.332347" y="343.378711" transform="rotate(-0 233.332347 343.378711)">%</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_15"/>
+     <g id="text_9">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="129.5815" y="15.280467" transform="rotate(-0 129.5815 15.280467)">关节、手和执行器</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_16"/>
+     <g id="text_10">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="28.65587" transform="rotate(-0 129.5815 28.65587)">兆威机电</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_17"/>
+     <g id="text_11">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="42.038992" transform="rotate(-0 129.5815 42.038992)">三花智控</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_18"/>
+     <g id="text_12">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="55.422114" transform="rotate(-0 129.5815 55.422114)">拓普集团</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_19"/>
+     <g id="text_13">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="68.805236" transform="rotate(-0 129.5815 68.805236)">泉智博（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_20"/>
+     <g id="text_14">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="82.188358" transform="rotate(-0 129.5815 82.188358)">傲意科技（2024，推算）</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_21"/>
+     <g id="text_15">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="129.5815" y="100.263292" transform="rotate(-0 129.5815 100.263292)">丝杠</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_22"/>
+     <g id="text_16">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="113.638695" transform="rotate(-0 129.5815 113.638695)">新坐标</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_23"/>
+     <g id="text_17">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="127.021817" transform="rotate(-0 129.5815 127.021817)">恒立液压</text>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_24"/>
+     <g id="text_18">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="140.404939" transform="rotate(-0 129.5815 140.404939)">新剑传动（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_25"/>
+     <g id="text_19">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="129.5815" y="158.479872" transform="rotate(-0 129.5815 158.479872)">减速器</text>
+     </g>
+    </g>
+    <g id="ytick_12">
+     <g id="line2d_26"/>
+     <g id="text_20">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="171.855276" transform="rotate(-0 129.5815 171.855276)">精锐科技（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_27"/>
+     <g id="text_21">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="185.238398" transform="rotate(-0 129.5815 185.238398)">纽氏达特（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_14">
+     <g id="line2d_28"/>
+     <g id="text_22">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="198.62152" transform="rotate(-0 129.5815 198.62152)">绿的谐波</text>
+     </g>
+    </g>
+    <g id="ytick_15">
+     <g id="line2d_29"/>
+     <g id="text_23">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="212.004642" transform="rotate(-0 129.5815 212.004642)">环动科技（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_16">
+     <g id="line2d_30"/>
+     <g id="text_24">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="225.387764" transform="rotate(-0 129.5815 225.387764)">双环传动</text>
+     </g>
+    </g>
+    <g id="ytick_17">
+     <g id="line2d_31"/>
+     <g id="text_25">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="238.770886" transform="rotate(-0 129.5815 238.770886)">纳博特斯克</text>
+     </g>
+    </g>
+    <g id="ytick_18">
+     <g id="line2d_32"/>
+     <g id="text_26">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="252.154008" transform="rotate(-0 129.5815 252.154008)">哈默纳科（截至 2026 年 3 月的财年）</text>
+     </g>
+    </g>
+    <g id="ytick_19">
+     <g id="line2d_33"/>
+     <g id="text_27">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="129.5815" y="265.53713" transform="rotate(-0 129.5815 265.53713)">来福谐波（推算）</text>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_34">
+    <path d="M 237.045342 318.72168 
+L 237.045342 2.88 
+" clip-path="url(#p8d6b8f463b)" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 133.0815 318.72168 
+L 333.583195 318.72168 
+" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 237.045342 21.48254 
+L 259.026268 21.48254 
+L 259.026268 29.780075 
+L 237.045342 29.780075 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="260.630282" y="27.785432" transform="rotate(-0 260.630282 27.785432)">14.8%</text>
+   </g>
+   <g id="patch_5">
+    <path d="M 237.045342 34.865662 
+L 256.501432 34.865662 
+L 256.501432 43.163197 
+L 237.045342 43.163197 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="258.105446" y="41.168554" transform="rotate(-0 258.105446 41.168554)">13.1%</text>
+   </g>
+   <g id="patch_6">
+    <path d="M 237.045342 48.248784 
+L 251.006201 48.248784 
+L 251.006201 56.546319 
+L 237.045342 56.546319 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="252.610214" y="54.551677" transform="rotate(-0 252.610214 54.551677)">9.4%</text>
+   </g>
+   <g id="patch_7">
+    <path d="M 237.045342 61.631906 
+L 248.481364 61.631906 
+L 248.481364 69.929441 
+L 237.045342 69.929441 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eb6834"/>
+   </g>
+   <g id="text_31">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="250.085378" y="67.934799" transform="rotate(-0 250.085378 67.934799)">7.7%</text>
+   </g>
+   <g id="patch_8">
+    <path d="M 237.045342 75.015028 
+L 201.103556 75.015028 
+L 201.103556 83.312563 
+L 237.045342 83.312563 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eb6834"/>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="238.649355" y="81.317921" transform="rotate(-0 238.649355 81.317921)">−24.2%</text>
+   </g>
+   <g id="patch_9">
+    <path d="M 237.045342 106.465365 
+L 286.353907 106.465365 
+L 286.353907 114.7629 
+L 237.045342 114.7629 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_33">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="287.95792" y="112.768257" transform="rotate(-0 287.95792 112.768257)">33.2%</text>
+   </g>
+   <g id="patch_10">
+    <path d="M 237.045342 119.848487 
+L 274.175285 119.848487 
+L 274.175285 128.146022 
+L 237.045342 128.146022 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_34">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="275.779299" y="126.151379" transform="rotate(-0 275.779299 126.151379)">25.0%</text>
+   </g>
+   <g id="patch_11">
+    <path d="M 237.045342 133.231609 
+L 261.254065 133.231609 
+L 261.254065 141.529144 
+L 237.045342 141.529144 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eb6834"/>
+   </g>
+   <g id="text_35">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="262.858079" y="139.534501" transform="rotate(-0 262.858079 139.534501)">16.3%</text>
+   </g>
+   <g id="patch_12">
+    <path d="M 237.045342 164.681945 
+L 284.720189 164.681945 
+L 284.720189 172.979481 
+L 237.045342 172.979481 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eda100"/>
+   </g>
+   <g id="text_36">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="286.324203" y="170.984838" transform="rotate(-0 286.324203 170.984838)">32.1%</text>
+   </g>
+   <g id="patch_13">
+    <path d="M 237.045342 178.065067 
+L 281.601274 178.065067 
+L 281.601274 186.362603 
+L 237.045342 186.362603 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eb6834"/>
+   </g>
+   <g id="text_37">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="283.205288" y="184.36796" transform="rotate(-0 283.205288 184.36796)">30.0%</text>
+   </g>
+   <g id="patch_14">
+    <path d="M 237.045342 191.448189 
+L 269.422653 191.448189 
+L 269.422653 199.745725 
+L 237.045342 199.745725 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_38">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="271.026666" y="197.751082" transform="rotate(-0 271.026666 197.751082)">21.8%</text>
+   </g>
+   <g id="patch_15">
+    <path d="M 237.045342 204.831311 
+L 268.828573 204.831311 
+L 268.828573 213.128847 
+L 237.045342 213.128847 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_39">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="270.432587" y="211.134204" transform="rotate(-0 270.432587 211.134204)">21.4%</text>
+   </g>
+   <g id="patch_16">
+    <path d="M 237.045342 218.214434 
+L 257.541071 218.214434 
+L 257.541071 226.511969 
+L 237.045342 226.511969 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_40">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="259.145084" y="224.517326" transform="rotate(-0 259.145084 224.517326)">13.8%</text>
+   </g>
+   <g id="patch_17">
+    <path d="M 237.045342 231.597556 
+L 244.61985 231.597556 
+L 244.61985 239.895091 
+L 237.045342 239.895091 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eda100"/>
+   </g>
+   <g id="text_41">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="246.223864" y="237.900448" transform="rotate(-0 246.223864 237.900448)">5.1%</text>
+   </g>
+   <g id="patch_18">
+    <path d="M 237.045342 244.980678 
+L 241.055376 244.980678 
+L 241.055376 253.278213 
+L 237.045342 253.278213 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #eda100"/>
+   </g>
+   <g id="text_42">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="242.659389" y="251.28357" transform="rotate(-0 242.659389 251.28357)">2.7%</text>
+   </g>
+   <g id="patch_19">
+    <path d="M 237.045342 258.3638 
+L 139.76489 258.3638 
+L 139.76489 266.661335 
+L 237.045342 266.661335 
+z
+" clip-path="url(#p8d6b8f463b)" style="fill: #1baf7a"/>
+   </g>
+   <g id="text_43">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="238.649355" y="264.666692" transform="rotate(-0 238.649355 264.666692)">−65.5%</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_20">
+    <path d="M 524.059805 318.72168 
+L 724.5615 318.72168 
+L 724.5615 2.88 
+L 524.059805 2.88 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="xtick_8">
+     <g id="line2d_35">
+      <path d="M 538.911782 318.72168 
+L 538.911782 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_36">
+      <g>
+       <use xlink:href="#macbaba13c2" x="538.911782" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_44">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="538.911782" y="331.691211" transform="rotate(-0 538.911782 331.691211)">−60</text>
+     </g>
+    </g>
+    <g id="xtick_9">
+     <g id="line2d_37">
+      <path d="M 568.615737 318.72168 
+L 568.615737 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_38">
+      <g>
+       <use xlink:href="#macbaba13c2" x="568.615737" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_45">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="568.615737" y="331.691211" transform="rotate(-0 568.615737 331.691211)">−40</text>
+     </g>
+    </g>
+    <g id="xtick_10">
+     <g id="line2d_39">
+      <path d="M 598.319692 318.72168 
+L 598.319692 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_40">
+      <g>
+       <use xlink:href="#macbaba13c2" x="598.319692" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_46">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="598.319692" y="331.691211" transform="rotate(-0 598.319692 331.691211)">−20</text>
+     </g>
+    </g>
+    <g id="xtick_11">
+     <g id="line2d_41">
+      <path d="M 628.023647 318.72168 
+L 628.023647 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_42">
+      <g>
+       <use xlink:href="#macbaba13c2" x="628.023647" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_47">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="628.023647" y="331.691211" transform="rotate(-0 628.023647 331.691211)">0</text>
+     </g>
+    </g>
+    <g id="xtick_12">
+     <g id="line2d_43">
+      <path d="M 657.727602 318.72168 
+L 657.727602 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_44">
+      <g>
+       <use xlink:href="#macbaba13c2" x="657.727602" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_48">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="657.727602" y="331.691211" transform="rotate(-0 657.727602 331.691211)">20</text>
+     </g>
+    </g>
+    <g id="xtick_13">
+     <g id="line2d_45">
+      <path d="M 687.431556 318.72168 
+L 687.431556 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_46">
+      <g>
+       <use xlink:href="#macbaba13c2" x="687.431556" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_49">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="687.431556" y="331.691211" transform="rotate(-0 687.431556 331.691211)">40</text>
+     </g>
+    </g>
+    <g id="xtick_14">
+     <g id="line2d_47">
+      <path d="M 717.135511 318.72168 
+L 717.135511 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #e1e0d9; stroke-width: 0.6; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_48">
+      <g>
+       <use xlink:href="#macbaba13c2" x="717.135511" y="318.72168" style="fill: #52514e; stroke: #52514e; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_50">
+      <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="717.135511" y="331.691211" transform="rotate(-0 717.135511 331.691211)">60</text>
+     </g>
+    </g>
+    <g id="text_51">
+     <text style="font-size: 7.5px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: middle; fill: #52514e" x="624.310653" y="343.378711" transform="rotate(-0 624.310653 343.378711)">%</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_20">
+     <g id="line2d_49"/>
+     <g id="text_52">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="520.559805" y="15.280467" transform="rotate(-0 520.559805 15.280467)">电机和编码器</text>
+     </g>
+    </g>
+    <g id="ytick_21">
+     <g id="line2d_50"/>
+     <g id="text_53">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="28.65587" transform="rotate(-0 520.559805 28.65587)">雷赛智能</text>
+     </g>
+    </g>
+    <g id="ytick_22">
+     <g id="line2d_51"/>
+     <g id="text_54">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="42.038992" transform="rotate(-0 520.559805 42.038992)">汇川技术</text>
+     </g>
+    </g>
+    <g id="ytick_23">
+     <g id="line2d_52"/>
+     <g id="text_55">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="55.422114" transform="rotate(-0 520.559805 55.422114)">步科股份</text>
+     </g>
+    </g>
+    <g id="ytick_24">
+     <g id="line2d_53"/>
+     <g id="text_56">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="68.805236" transform="rotate(-0 520.559805 68.805236)">禹衡光学（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_25">
+     <g id="line2d_54"/>
+     <g id="text_57">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="82.188358" transform="rotate(-0 520.559805 82.188358)">鸣志电器</text>
+     </g>
+    </g>
+    <g id="ytick_26">
+     <g id="line2d_55"/>
+     <g id="text_58">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="95.57148" transform="rotate(-0 520.559805 95.57148)">禾川科技</text>
+     </g>
+    </g>
+    <g id="ytick_27">
+     <g id="line2d_56"/>
+     <g id="text_59">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="520.559805" y="113.646414" transform="rotate(-0 520.559805 113.646414)">传感器</text>
+     </g>
+    </g>
+    <g id="ytick_28">
+     <g id="line2d_57"/>
+     <g id="text_60">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="127.021817" transform="rotate(-0 520.559805 127.021817)">芯动联科</text>
+     </g>
+    </g>
+    <g id="ytick_29">
+     <g id="line2d_58"/>
+     <g id="text_61">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="140.404939" transform="rotate(-0 520.559805 140.404939)">柯力传感</text>
+     </g>
+    </g>
+    <g id="ytick_30">
+     <g id="line2d_59"/>
+     <g id="text_62">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="153.788061" transform="rotate(-0 520.559805 153.788061)">禾赛</text>
+     </g>
+    </g>
+    <g id="ytick_31">
+     <g id="line2d_60"/>
+     <g id="text_63">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="167.171183" transform="rotate(-0 520.559805 167.171183)">奥比中光</text>
+     </g>
+    </g>
+    <g id="ytick_32">
+     <g id="line2d_61"/>
+     <g id="text_64">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="180.554305" transform="rotate(-0 520.559805 180.554305)">速腾聚创</text>
+     </g>
+    </g>
+    <g id="ytick_33">
+     <g id="line2d_62"/>
+     <g id="text_65">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="520.559805" y="198.629239" transform="rotate(-0 520.559805 198.629239)">芯片和控制器</text>
+     </g>
+    </g>
+    <g id="ytick_34">
+     <g id="line2d_63"/>
+     <g id="text_66">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="212.004642" transform="rotate(-0 520.559805 212.004642)">英伟达（截至 2026 年 1 月的财年）</text>
+     </g>
+    </g>
+    <g id="ytick_35">
+     <g id="line2d_64"/>
+     <g id="text_67">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="225.387764" transform="rotate(-0 520.559805 225.387764)">瑞芯微</text>
+     </g>
+    </g>
+    <g id="ytick_36">
+     <g id="line2d_65"/>
+     <g id="text_68">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="238.770886" transform="rotate(-0 520.559805 238.770886)">仙工智能（推算）</text>
+     </g>
+    </g>
+    <g id="ytick_37">
+     <g id="line2d_66"/>
+     <g id="text_69">
+      <text style="font-weight: 700; font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #0b0b0b" x="520.559805" y="256.845819" transform="rotate(-0 520.559805 256.845819)">材料</text>
+     </g>
+    </g>
+    <g id="ytick_38">
+     <g id="line2d_67"/>
+     <g id="text_70">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="270.221223" transform="rotate(-0 520.559805 270.221223)">威格斯（截至 2025 年 9 月的财年）</text>
+     </g>
+    </g>
+    <g id="ytick_39">
+     <g id="line2d_68"/>
+     <g id="text_71">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="283.604345" transform="rotate(-0 520.559805 283.604345)">金力永磁</text>
+     </g>
+    </g>
+    <g id="ytick_40">
+     <g id="line2d_69"/>
+     <g id="text_72">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="296.987467" transform="rotate(-0 520.559805 296.987467)">北方稀土</text>
+     </g>
+    </g>
+    <g id="ytick_41">
+     <g id="line2d_70"/>
+     <g id="text_73">
+      <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: end; fill: #52514e" x="520.559805" y="310.370589" transform="rotate(-0 520.559805 310.370589)">中研股份</text>
+     </g>
+    </g>
+   </g>
+   <g id="line2d_71">
+    <path d="M 628.023647 318.72168 
+L 628.023647 2.88 
+" clip-path="url(#pd920f3cd0b)" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="patch_21">
+    <path d="M 524.059805 318.72168 
+L 724.5615 318.72168 
+" style="fill: none; stroke: #c3c2b7; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 628.023647 21.48254 
+L 645.84602 21.48254 
+L 645.84602 29.780075 
+L 628.023647 29.780075 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_74">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="647.450033" y="27.785432" transform="rotate(-0 647.450033 27.785432)">12.0%</text>
+   </g>
+   <g id="patch_23">
+    <path d="M 628.023647 34.865662 
+L 644.657862 34.865662 
+L 644.657862 43.163197 
+L 628.023647 43.163197 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_75">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="646.261875" y="41.168554" transform="rotate(-0 646.261875 41.168554)">11.2%</text>
+   </g>
+   <g id="patch_24">
+    <path d="M 628.023647 48.248784 
+L 642.875624 48.248784 
+L 642.875624 56.546319 
+L 628.023647 56.546319 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_76">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="644.479638" y="54.551677" transform="rotate(-0 644.479638 54.551677)">10.0%</text>
+   </g>
+   <g id="patch_25">
+    <path d="M 628.023647 61.631906 
+L 640.350788 61.631906 
+L 640.350788 69.929441 
+L 628.023647 69.929441 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_77">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="641.954802" y="67.934799" transform="rotate(-0 641.954802 67.934799)">8.3%</text>
+   </g>
+   <g id="patch_26">
+    <path d="M 628.023647 75.015028 
+L 631.291082 75.015028 
+L 631.291082 83.312563 
+L 628.023647 83.312563 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_78">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="632.895095" y="81.317921" transform="rotate(-0 632.895095 81.317921)">2.2%</text>
+   </g>
+   <g id="patch_27">
+    <path d="M 628.023647 88.39815 
+L 609.013116 88.39815 
+L 609.013116 96.695685 
+L 628.023647 96.695685 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_79">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="629.62766" y="94.701043" transform="rotate(-0 629.62766 94.701043)">−12.8%</text>
+   </g>
+   <g id="patch_28">
+    <path d="M 628.023647 119.848487 
+L 714.016596 119.848487 
+L 714.016596 128.146022 
+L 628.023647 128.146022 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_80">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="715.62061" y="126.151379" transform="rotate(-0 715.62061 126.151379)">57.9%</text>
+   </g>
+   <g id="patch_29">
+    <path d="M 628.023647 133.231609 
+L 660.549477 133.231609 
+L 660.549477 141.529144 
+L 628.023647 141.529144 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_81">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="662.153491" y="139.534501" transform="rotate(-0 662.153491 139.534501)">21.9%</text>
+   </g>
+   <g id="patch_30">
+    <path d="M 628.023647 146.614731 
+L 649.410494 146.614731 
+L 649.410494 154.912266 
+L 628.023647 154.912266 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #1baf7a"/>
+   </g>
+   <g id="text_82">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="651.014508" y="152.917623" transform="rotate(-0 651.014508 152.917623)">14.4%</text>
+   </g>
+   <g id="patch_31">
+    <path d="M 628.023647 159.997853 
+L 648.222336 159.997853 
+L 648.222336 168.295388 
+L 628.023647 168.295388 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_83">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="649.82635" y="166.300746" transform="rotate(-0 649.82635 166.300746)">13.6%</text>
+   </g>
+   <g id="patch_32">
+    <path d="M 628.023647 173.380975 
+L 616.884664 173.380975 
+L 616.884664 181.67851 
+L 628.023647 181.67851 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #1baf7a"/>
+   </g>
+   <g id="text_84">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="629.62766" y="179.683868" transform="rotate(-0 629.62766 179.683868)">−7.5%</text>
+   </g>
+   <g id="patch_33">
+    <path d="M 628.023647 204.831311 
+L 710.600641 204.831311 
+L 710.600641 213.128847 
+L 628.023647 213.128847 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #1baf7a"/>
+   </g>
+   <g id="text_85">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="712.204655" y="211.134204" transform="rotate(-0 712.204655 211.134204)">55.6%</text>
+   </g>
+   <g id="patch_34">
+    <path d="M 628.023647 218.214434 
+L 663.074314 218.214434 
+L 663.074314 226.511969 
+L 628.023647 226.511969 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_86">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="664.678327" y="224.517326" transform="rotate(-0 664.678327 224.517326)">23.6%</text>
+   </g>
+   <g id="patch_35">
+    <path d="M 628.023647 231.597556 
+L 612.280551 231.597556 
+L 612.280551 239.895091 
+L 628.023647 239.895091 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #1baf7a"/>
+   </g>
+   <g id="text_87">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="629.62766" y="237.900448" transform="rotate(-0 629.62766 237.900448)">−10.6%</text>
+   </g>
+   <g id="patch_36">
+    <path d="M 628.023647 263.047892 
+L 642.133025 263.047892 
+L 642.133025 271.345428 
+L 628.023647 271.345428 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #eda100"/>
+   </g>
+   <g id="text_88">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="643.737039" y="269.350785" transform="rotate(-0 643.737039 269.350785)">9.50%</text>
+   </g>
+   <g id="patch_37">
+    <path d="M 628.023647 276.431014 
+L 641.538946 276.431014 
+L 641.538946 284.72855 
+L 628.023647 284.72855 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_89">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="643.14296" y="282.733907" transform="rotate(-0 643.14296 282.733907)">9.1%</text>
+   </g>
+   <g id="patch_38">
+    <path d="M 628.023647 289.814136 
+L 635.895195 289.814136 
+L 635.895195 298.111672 
+L 628.023647 298.111672 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_90">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="637.499208" y="296.117029" transform="rotate(-0 637.499208 296.117029)">5.3%</text>
+   </g>
+   <g id="patch_39">
+    <path d="M 628.023647 303.197258 
+L 633.667398 303.197258 
+L 633.667398 311.494794 
+L 628.023647 311.494794 
+z
+" clip-path="url(#pd920f3cd0b)" style="fill: #2a78d6"/>
+   </g>
+   <g id="text_91">
+    <text style="font-size: 7.6px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start; fill: #0b0b0b" x="635.271412" y="309.500151" transform="rotate(-0 635.271412 309.500151)">3.8%</text>
+   </g>
+  </g>
+  <g id="legend_1">
+   <g id="patch_40">
+    <path d="M 200.756578 379.646273 
+L 216.356578 379.646273 
+L 216.356578 374.186273 
+L 200.756578 374.186273 
+z
+" style="fill: #2a78d6; stroke: #2a78d6; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_92">
+    <text style="font-size: 7.8px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start" x="222.596578" y="379.646273" transform="rotate(-0 222.596578 379.646273)">A 股（含北交所）</text>
+   </g>
+   <g id="patch_41">
+    <path d="M 299.286422 379.646273 
+L 314.886422 379.646273 
+L 314.886422 374.186273 
+L 299.286422 374.186273 
+z
+" style="fill: #eb6834; stroke: #eb6834; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_93">
+    <text style="font-size: 7.8px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start" x="321.126422" y="379.646273" transform="rotate(-0 321.126422 379.646273)">没上市（含新三板、排队上市）</text>
+   </g>
+   <g id="patch_42">
+    <path d="M 445.926422 379.646273 
+L 461.526422 379.646273 
+L 461.526422 374.186273 
+L 445.926422 374.186273 
+z
+" style="fill: #1baf7a; stroke: #1baf7a; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_94">
+    <text style="font-size: 7.8px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start" x="467.766422" y="379.646273" transform="rotate(-0 467.766422 379.646273)">港股、美股</text>
+   </g>
+   <g id="patch_43">
+    <path d="M 522.366422 379.646273 
+L 537.966422 379.646273 
+L 537.966422 374.186273 
+L 522.366422 374.186273 
+z
+" style="fill: #eda100; stroke: #eda100; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_95">
+    <text style="font-size: 7.8px; font-family: 'Noto Sans CJK SC', 'Noto Sans CJK JP', sans-serif; text-anchor: start" x="544.206422" y="379.646273" transform="rotate(-0 544.206422 379.646273)">东京、韩国、台湾、伦敦等</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p8d6b8f463b">
+   <rect x="133.0815" y="2.88" width="200.501695" height="315.84168"/>
+  </clipPath>
+  <clipPath id="pd920f3cd0b">
+   <rect x="524.059805" y="2.88" width="200.501695" height="315.84168"/>
+  </clipPath>
+ </defs>
+</svg>
