@@ -478,7 +478,8 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
       $('#rt').querySelectorAll('[data-k]').forEach((el) => el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', (e) => { st[el.dataset.k] = el.tagName === 'INPUT' ? e.target.value.trim().toLowerCase() : e.target.value; st.page = 0; draw(); }));
       function draw() {
         const rs = R.rows.filter((r) => (!st.reg || r._r === st.reg) && (!st.typ || r[C['类型']] === st.typ) && (!st.stg || r._s === st.stg) && (!st.grd || r._g === st.grd) && (!st.own || r[C['所有者类型']] === st.own) && (!st.q || r.join(' ').toLowerCase().includes(st.q)));
-        $('#rt .count').textContent = `${rs.length.toLocaleString()} 行，${new Set(rs.map((r) => r[C['整机厂']])).size.toLocaleString()} 家整机厂`;
+        const nm = new Set(rs.map((r) => r[C['整机厂']])), mk = new Set(rs.filter((r) => r._s !== '不做整机').map((r) => r[C['整机厂']]));
+        $('#rt .count').textContent = `${rs.length.toLocaleString()} 行，${nm.size.toLocaleString()} 家公司` + (nm.size > mk.size ? `（其中 ${(nm.size - mk.size).toLocaleString()} 家查过、不做整机）` : '');
         const pages = Math.max(1, Math.ceil(rs.length / PAGE)); st.page = Math.min(st.page, pages - 1);
         const part = rs.slice(st.page * PAGE, st.page * PAGE + PAGE);
         const tb = $('#rt tbody');
