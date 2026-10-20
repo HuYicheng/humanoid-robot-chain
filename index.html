@@ -12,6 +12,7 @@
   --v-a: #2a78d6; --v-unl: #eb6834; --v-hkus: #1baf7a; --v-oth: #eda100; --v-unk: #a3a8ae;
   --t-a: #0d3b78; --t-b: #2a78d6; --t-c: #7fb0ea; --t-d: #c4c3b9; --t-x: #a9a89e; --t-e: #c9dcf5; --t-ann: #e4e3dc;
   --globe-sea: #e3e9f0; --globe-land: #cdd5de; --globe-coast: #b1bcc8; --globe-grid: rgba(20, 24, 29, .07);
+  --warn: #b4541a;
   /* 只用系统自带的中文字体，不下载网络字体（一页中文要下载上百个字体切片，最慢的就是它） */
   --serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
   --sans: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", sans-serif;
@@ -22,6 +23,7 @@
     --accent: #7da9ff; --accent-soft: #1b283c; --mark: #5a4a12; --banner: #3a2f12; --banner-fg: #f3dc9c;
     --v-unk: #7d848c; --t-d: #6b6a62; --t-x: #8a897f; --t-e: #3d5a80; --t-ann: #45443f; color-scheme: dark;
     --globe-sea: #0d1319; --globe-land: #29313b; --globe-coast: #3b4654; --globe-grid: rgba(230, 233, 237, .06);
+    --warn: #f0a46c;
   }
 }
 :root[data-theme="dark"] {
@@ -29,6 +31,7 @@
   --accent: #7da9ff; --accent-soft: #1b283c; --mark: #5a4a12; --banner: #3a2f12; --banner-fg: #f3dc9c;
   --v-unk: #7d848c; --t-d: #6b6a62; --t-x: #8a897f; --t-e: #3d5a80; --t-ann: #45443f; color-scheme: dark;
   --globe-sea: #0d1319; --globe-land: #29313b; --globe-coast: #3b4654; --globe-grid: rgba(230, 233, 237, .06);
+  --warn: #f0a46c;
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.75; }
@@ -136,6 +139,12 @@ dl.kv dd { margin: 0; overflow-wrap: anywhere; }
 .card span { font-size: 12.5px; color: var(--muted); }
 .mini { display: flex; height: 6px; margin-top: 6px; border-radius: 3px; overflow: hidden; background: var(--sunk); }
 .loading { padding: 30px 0; color: var(--muted); }
+/* 读不到资料时的说明和“再试一次” */
+.loadfail { margin: 22px 0; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: 6px; font-size: 14px; line-height: 1.6; }
+.loadfail p { margin: 0 0 8px; }
+.loadfail .muted { font-size: 12.5px; }
+button.retry { font-size: 13px; color: var(--fg); background: var(--surface); border: 1px solid var(--accent); border-radius: 6px; padding: 5px 14px; cursor: pointer; }
+button.retry:hover { background: var(--accent-soft); }
 dialog.ev { border: 1px solid var(--line); border-radius: 10px; padding: 0; width: min(720px, calc(100vw - 32px)); max-height: 85vh; background: var(--surface); color: var(--fg); }
 dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
 .ev-in { padding: 16px 18px 18px; overflow: auto; max-height: 85vh; }
@@ -183,7 +192,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
   <nav class="nav" id="nav" aria-label="各部分"></nav>
 </header>
 <div class="banner" id="banner" hidden><div></div></div>
-<main id="view"><p class="loading">正在打开…</p></main>
+<main id="view"><p class="loading">正在打开…<span class="wait"></span></p></main>
 <div class="tip" id="tip" hidden></div>
 <dialog class="ev" id="ev"><button class="ev-x" id="ev-x" aria-label="关闭">×</button><div class="ev-in" id="ev-in"></div></dialog>
 
@@ -199,24 +208,118 @@ table.mx td small { opacity: .8; margin-left: 3px; }
   const SCOL = { '量产': 'var(--t-a)', '对外销售': 'var(--t-b)', '试点或小批量': 'var(--t-c)', '只有展会页自述': 'var(--t-x)', '样机或研发': 'var(--t-e)', '只有宣布': 'var(--t-ann)' };
   const TIER = { A: ['已量产或有收入', 'var(--t-a)'], B: ['送样或小批量', 'var(--t-b)'], C: ['研发或在建', 'var(--t-c)'], D: ['只是概念', 'var(--t-d)'] };
   const PAGE = 50;
-  const cache = {};
+  const BUILT = '2026-10-20 16:40';
+  // 这一版每个数据文件的校验值（文件内容 SHA-256 的前 16 位）。读到的文件和它对不上，就是浏览器缓存里的旧版，或者服务器上已经是新版
+  const MANIFEST = {"core":"4f25a2f2c0547365","refs":"dc836227d03e0c77","companies":"c6459d721c3bc45b","guide":"718efc3974bc6d3d","robots":"e30b9de2b740301b","report_s1":"4261b5741e00326a","report_s2":"f2085c557ced302d","report_s3":"ca096e8916449e6a","report_s4":"6b39b46ef8a1dfa6","report_s5":"1a50ec719ec17372","report_s6":"9326a4c09bc3c265","report_s7":"cbfd73c4e3307b5e","ev_A01":"71134a8b7027f2d7","ev_A02":"282a46d5b3f44fb9","ev_A03":"7e187934cf24201d","ev_A04":"7f84fdc4ef560a07","ev_A05":"ca7fdd128a56b909","ev_A06":"9c651731672e2686","ev_J01":"005b09f8423aa4f5","ev_J02":"c952e0689239dd07","ev_J03":"5449736e7f66d2bf","ev_J04":"2150be118fb77dac","ev_J05":"db8ae553721da6b7","ev_J06":"4a0006b9dce1accd","ev_J07":"e0dda7714fe0a316","ev_J08":"fdaaa68083a8ff2a","ev_H01":"17bc82a4c6bbf3b6","ev_H02":"60ffa01d9b520082","ev_H03":"4e67ab56e084b1e9","ev_H04":"553952a05a0bd613","ev_T01":"66fa52f146b1a773","ev_T02":"4496333edf12a335","ev_T03":"4b896f8d650c3e59","ev_T04":"1736a92c026ccaef","ev_T05":"61ec8b69328ae8bc","ev_T06":"b9467dbafcc894c5","ev_T07":"bf1f79f2104ceba4","ev_T08":"90688fcbb1f45e87","ev_T09":"bf745c6c8d1d0ac0","ev_T10":"78478745a56d3b2f","ev_T11":"089f67703b74ac09","ev_T12":"e218a538579b798f","ev_T13":"b6b0dab5628f634e","ev_B01":"adf93408ae482eb4","ev_B02":"9b9c2a778460d5cb","ev_B03":"564286fefc09fdbd","ev_B04":"3895ee59845f17c2","ev_B05":"3a0eaa7abb887e68","ev_B06":"67645d559a689b65","ev_B07":"60c1364cd2b99726","ev_B08":"9e1eec2cb37e5a4c","ev_D01":"342019ebac7aa63c","ev_D02":"9f7e31a9dcb3c0ee","ev_D03":"b50ba50f9c1ec522","ev_D04":"f3ea652026edddea","ev_D05":"6b20390c8efc39c0","ev_D06":"7e96c67bc8504690","ev_D07":"8bff813db0e205a4","ev_D08":"a89ec745e259ffa1","ev_D09":"257cd9851d4ed301","ev_D10":"7656b197a603aabe","ev_S01":"967d3ee6ad9a8c2a","ev_S02":"752047c73714f985","ev_S03":"2b31fb5282e19681","ev_S04":"a3ca98d9b914510d","ev_S05":"b746be24e72dfba7","ev_S06":"c94a0b57a0e52620","ev_S07":"216e171df32408e1","ev_S08":"483e4d6de1a54663","ev_S09":"93e8110fd31dd730","ev_S10":"f16ad3771d9f552d","ev_S11":"ccdc92f4ba159a88","ev_S12":"2d872f49fe0432cf","ev_S13":"489d5fad7f53dcc5","ev_S14":"df0ccbe08af1a540","ev_C01":"915d579f9cbc342c","ev_C02":"9f8db79fab9c12bb","ev_C03":"9cb740c21f5a1643","ev_C04":"7e3a69d5ba045b92","ev_C05":"a4f7986298739807","ev_C06":"f699a6b2ce680fcf","ev_C07":"0e04fa80f8412727","ev_C08":"a3c32627cc0e4044","ev_C09":"ca99a7483ca954a3","ev_C10":"9b91f9d286b488fe","ev_C11":"0a1b24ccf1f423e7","ev_C12":"07e5a494e4741284","ev_C13":"ad1862da6285a9ee","ev_C14":"a5b7a6b560813dcc","ev_C15":"a95ad795dbe83a00","ev_C16":"556e5a29ba073b91","ev_L01":"e6abd2cb2e9c6b6c","ev_L02":"5e4749c0f83b500e","ev_L03":"d1c06e9e362a782a","ev_L04":"18aad51b8991358b","ev_L05":"77cbf0113ef51463","ev_L06":"d236bdea35c2fcea","ev_L07":"bbf37037c859a098","ev_L08":"5e39ba2e8b1b6998","ev_P01":"b1db47962330066c","ev_P02":"59365af6b1f569e8","ev_P03":"b0515d9c2027dc2f","ev_P04":"4def6702d923a89b","ev_P05":"32d9547b9dd013cc","ev_P06":"a57f609c99a4b3e4","ev_P07":"1c4fe2a55c91be91","ev_R01":"e174f4003dbdbc6e","ev_R02":"7f4fcf7ea821b203","ev_R03":"e38ec6465ae1f16d","ev_X01":"6932ba3020db4161","ev_X02":"5e3157dce8fe4259","ev_X03":"58c22ef4cc9506ca","ev_X04":"d2be24a1463b2018","ev_X05":"df595f582153e582","ev_X06":"2143c85ab5b2c7b7","ev_X07":"ee07e021bee63834","ev_X08":"82ef33db01b16ebd","ev_X09":"2e04302fbeff6f68","ev_X10":"45312783378859c2","ev_X11":"4246dc5c08711602","ev_X12":"1bc074141fb4581a","ev_M01":"f348224c3f649861","ev_M02":"e364d42889801879","ev_M03":"b75fc52570c1f925","ev_M04":"663039cd116f9beb","ev_M05":"deecda593613ac60","ev_M06":"f53599afafa1d068","ev_M07":"0fa5ce0900a803c8","ev_M08":"0fbf185ce1d7aa2e","ev_M09":"84c89788370f5acd","ev_M10":"2ea5db799164516e","ev_M11":"6786a892d6f2450c","ev_M12":"02d6efe9fc04a48c","ev_M13":"4502ef35752b29d5","ev_M14":"e38943fae244b19f","ev_M15":"723e5214c495b271","ev_M16":"3eb8db3012546232","ev_M17":"3e60b38ee8dd65e8","ev_M18":"f2c07593828fcccd","ev_M19":"95aa3cd74310f717","ev_M20":"61d5804ad3685130","ev_M21":"5975e57db7da9596","ev_M22":"50f68216d7387c6b","ev_M23":"2477ee82b8f36612","ev_M24":"459b5dbabfec759b","ev_M25":"600e79415311b24d","ev_M26":"ef4d5b4e6414c5bb","ev_M27":"09937d5203d77504","ev_Q01":"80a65e4ec06fa12f","ev_Q02":"f241f65ff5e95860","ev_Q03":"30128dcf8d0cc996","ev_Q04":"00ad9e4d7aa3ff2a","ev_Q05":"57da34ffb377a00c","ev_Q06":"f867e1e245225008","ev_Q07":"db18cd26917e3117","ev_Q08":"6e370479a4fb979a","ev_Q09":"68ab6f09355354e2","ev_Q10":"49f508d629544bbc","ev_Q11":"442b53d9511672c5","ev_Q12":"def338f667d51146","ev_Q13":"5a3f450018a2d8e9","ev_Q14":"f957c7c4d1135c90","ev_Q15":"fd9e14a5505ddafa","ev_Q16":"e9b9b3c44be97300","ev_K01":"f08bca28c67dfe24","ev_K02":"05d3adf570ee037e","ev_K03":"993483c28b2d1004","ev_K04":"695881862c79b73d","ev_W01":"c5c17bc03bf3c547","ev_W02":"91edf42edd6c78d9","ev_W03":"cbb7b85ac728b30e","ev_W04":"6fb3d2cb66fd51b0","ev_W05":"0f4aed057bc17469","ev_W06":"e3c7e90ac107cd41","ev_W07":"8bf9fd1109115b9e","ev_W08":"ea83ad6271e85f79","ev_W09":"b5c6d9b3c26a2986","ev_W10":"a549f8b787b49e59","ev_W11":"805133df54c8f6f6","ev_W12":"049d8536caadffed","co_00":"c876e250e7e89835","co_01":"ae5366e52f528e70","co_02":"6fa1f3880a63486b","co_03":"a15e1ed741437cbb","co_04":"731ab6dc42aff5c4","co_05":"905a38daa75f8bd6","co_06":"cc95537b3b3dfa25","co_07":"0734a521fd641c2e","co_08":"491c01647b884d55","co_09":"cdd91e16e876a2e3","co_10":"58ef14ee934cfa72","co_11":"085ced7f4528c322","co_12":"fa9e2e5942ea04d2","co_13":"6ddeb8c8dd5f5739","co_14":"4d24fa50df9897f5","co_15":"76c002454cf3c30e","co_16":"b8f7cc4a87435a73","co_17":"6385de4438bac74e","co_18":"d3b1ef590b491607","co_19":"0a2f9b3156d2c8f5","co_20":"c55b7a9ab66c36cd","co_21":"4309ccbe3dd1e3cc","co_22":"fd3856e7bde96423","co_23":"4c5ebdff8e7cf3f4","co_24":"a5eb4ce441be0474","co_25":"febd374266bf88dd","co_26":"a2245bc23aaab72d","co_27":"070f2f33bda23331","co_28":"779323446a6d915b","co_29":"aba4f1bda0d54284","co_30":"177c2b9e4a77f9fd","co_31":"173c1f787bf62b85","co_32":"61bb3fb146e1b5e8","co_33":"0a8a504ce58d469e","co_34":"9e9310589babe47e","co_35":"434898da99e29aeb","co_36":"341b16bf55a982c6","co_37":"46fd8313adaeee4b","co_38":"b8c48eabe74371a1","co_39":"9b3177ac441248fa","co_40":"4e177651f784bc27","co_41":"0c8480ad3e7e0fb0","co_42":"cb709717fb2074ae","co_43":"80a426f3760cf5c9","co_44":"5e78bd85fa5901a5","co_45":"24bf360d6daf7e63","co_46":"a2b4621b017bc7d9","co_47":"2a663d119bbf94dd","co_48":"4699f85d4c711037","co_49":"8ae38126b5778322","co_50":"7a3550888aad33c7","co_51":"16d0aaec24fd28db","co_52":"34e664b5819e45e4","co_53":"768b0b21fa1f29a6","co_54":"6b658ff11e8ad131","co_55":"ac2874a911927cb1","co_56":"bbe12d61cd74a1d2","co_57":"316f7023667ccf7a","co_58":"9f752a7c9390bab3","co_59":"29c1ef886cbddae6","co_60":"86b3c52ea4ee6dce","co_61":"7e66f86a1863f9e9","co_62":"62daa0a64f3dd429","co_63":"7ef596f0c296d861","geo":"7d64c05c796ab495","land110":"afdb4653f63cc053","land50":"b9b700c90fdcfe9b","list":"4ed0a6e222a4132c"};
 
-  function load(name) {
-    if (cache[name]) return cache[name];
-    const el = document.getElementById('d-' + name);
-    cache[name] = el ? Promise.resolve(JSON.parse(el.textContent))
-      : fetch('data/' + name + '.json').then((r) => { if (!r.ok) throw new Error(name + ' ' + r.status); return r.json(); });
-    return cache[name];
+  // ---------- 读数据 ----------
+  // 网络断一下或卡住时（2026-10-20，用户：“会卡，感觉像掉线了，有时候得刷新好几次”）。以前一个文件读失败，网页记住了失败，
+  // 一直写着“正在读…”，换页回来也不重读，只能刷新整页；请求卡住不回也一直等。现在：
+  // 一个文件 10 秒没收到新的字节就当卡住，断开重读；断了、卡住都自动重读，一共读 3 次；读不到的不记住，下次进这一页重新读；
+  // “正在读…”后面写着收到了多少、多久没收到、是不是在重读；3 次都没读到就写明原因，给“再试一次”。
+  // 网站更新时不让新旧文件混用：读到的文件和这一版的校验值对不上，先绕过浏览器缓存再取一次；还对不上，说明网页是旧版，重新载入一次。
+  const STALL_MS = 10000, TRIES = 3, GAP_MS = [0, 0, 1000, 3000];
+  const cache = {}, inflight = {};
+  const kb = (n) => (n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB');
+  // 文件是不是这一版的；算不了校验值（没有清单、浏览器不支持）就当是
+  const sameVersion = (name, blob) => (!MANIFEST[name] || !(window.crypto && crypto.subtle) ? Promise.resolve(true)
+    : blob.arrayBuffer().then((b) => crypto.subtle.digest('SHA-256', b))
+      .then((h) => [...new Uint8Array(h)].slice(0, 8).map((x) => x.toString(16).padStart(2, '0')).join('') === MANIFEST[name]).catch(() => true));
+  function fetchOnce(name, st) {
+    const ctl = new AbortController();
+    let timer, stalled = false;
+    const arm = () => { clearTimeout(timer); st.last = Date.now(); timer = setTimeout(() => { stalled = true; ctl.abort(); }, STALL_MS); };
+    arm();
+    return fetch('data/' + name + '.json', { signal: ctl.signal, cache: st.n > 1 || st.fresh ? 'reload' : 'default' })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`服务器回了 ${r.status}`);
+        let blob;
+        if (r.body && r.body.getReader) {
+          const rd = r.body.getReader(), parts = [];
+          for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); st.got += value.length; arm(); }
+          blob = new Blob(parts);
+        } else blob = await r.blob();
+        clearTimeout(timer);
+        const x = JSON.parse(await blob.text());
+        st.same = await sameVersion(name, blob);
+        return x;
+      })
+      .catch((e) => { throw stalled ? new Error(`${STALL_MS / 1000} 秒没有收到数据`) : e instanceof TypeError ? new Error('连不上服务器') : e; })
+      .finally(() => clearTimeout(timer));
   }
+  // bg：后台预先读的（不在“正在读”后面报进度，读不到也不报错）
+  function load(name, bg) {
+    if (cache[name]) { if (!bg && inflight[name]) inflight[name].bg = false; return cache[name]; }
+    const el = document.getElementById('d-' + name);
+    if (el) return (cache[name] = Promise.resolve(JSON.parse(el.textContent)));
+    const st = inflight[name] = { n: 1, got: 0, t0: Date.now(), last: Date.now(), why: '', bg: !!bg, fresh: false, same: true };
+    const go = () => fetchOnce(name, st).then((x) => {
+      if (st.same) return x;
+      if (!st.fresh) { st.fresh = true; return go(); }
+      newVersion(); return x;
+    }, (e) => {
+      if (st.n >= TRIES) throw e;
+      st.why = e.message; st.n += 1; st.got = 0;
+      return new Promise((ok) => setTimeout(ok, GAP_MS[st.n])).then(go);
+    });
+    return (cache[name] = go().then((x) => { finished(name, st, ''); return x; }, (e) => {
+      finished(name, st, e.message); delete cache[name];
+      const err = new Error(`${e.message}（自动读了 ${st.n} 次）`); err.load = true; throw err;
+    }));
+  }
+  // 服务器上已经是新版、这个网页还是旧版（网站刚更新）：重新载入一次换成新版；载入过一次还是旧版（或浏览器不让存），就在顶上提示
+  let reloading = false;
+  function newVersion() {
+    if (reloading) return;
+    note('网站更新了：这个网页是旧版');
+    try { const k = 'reloaded-' + BUILT; if (!sessionStorage.getItem(k)) { sessionStorage.setItem(k, '1'); reloading = true; location.reload(); return; } } catch (e) { /* 存不了就只提示 */ }
+    const b = $('#banner'); if (!b.hidden) return;
+    b.hidden = false; $('div', b).innerHTML = '网站刚更新过，这个网页还是旧版，个别地方可能对不上。<a href="#" class="reload">点这里换成新版</a>';
+    $('a.reload', b).addEventListener('click', (e) => { e.preventDefault(); location.reload(); });
+  }
+  // 连接记录：每个文件读了多久、几次、为什么没读到。只存在这个浏览器里，不发到任何地方；#diag 页显示，卡住时复制给我就能看出原因
+  const LOGK = 'robot-chain-conn-log';
+  function note(what) {
+    try {
+      const L = JSON.parse(localStorage.getItem(LOGK) || '[]'), d = new Date(), p = (n) => String(n).padStart(2, '0');
+      L.push(`${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())} ${what}`);
+      localStorage.setItem(LOGK, JSON.stringify(L.slice(-150)));
+    } catch (e) { /* 存不了就不记 */ }
+  }
+  function finished(name, st, err) {
+    delete inflight[name];
+    const s = ((Date.now() - st.t0) / 1000).toFixed(1);
+    note(`${name} ${s} 秒，读了 ${st.n} 次${st.got ? '，' + kb(st.got) : ''}${st.fresh ? '，版本对不上、绕过缓存重取' : ''}` +
+      (err ? `，没读到：${err}` : st.n > 1 ? `，重读后读到（前一次：${st.why}）` : '') + (navigator.onLine === false ? '，浏览器说没联网' : ''));
+  }
+  // 每半秒更新“正在读…”后面那一句
+  setInterval(() => {
+    const els = document.querySelectorAll('.loading .wait'); if (!els.length) return;
+    const fs = Object.values(inflight).filter((s) => !s.bg), re = fs.find((s) => s.n > 1);
+    const got = fs.reduce((a, s) => a + s.got, 0), idle = fs.length ? Math.max(...fs.map((s) => Date.now() - s.last)) : 0;
+    const t = !fs.length ? '' : re ? `前一次没读到：${re.why}；正在读第 ${re.n} 次${got ? '，已收到 ' + kb(got) : ''}`
+      : idle >= 3000 ? `${Math.floor(idle / 1000)} 秒没有收到数据，到 ${STALL_MS / 1000} 秒会自动重读` : got ? `已收到 ${kb(got)}` : '';
+    els.forEach((el) => { el.textContent = t ? `（${t}）` : ''; });
+  }, 500);
   const view = $('#view');
   let CORE, COMP;
   const getComp = () => load('companies').then((c) => (COMP = c));
   // 读数据是异步的：读完时如果已经换了页，就不往页面里写（快速连点两块时，前一块的名单不能写进后一块的页面）
   let SEQ = 0;
   const live = () => { const n = SEQ; return (f) => (x) => (n === SEQ ? f(x) : undefined); };
-  // 一块的证据（一块一个文件）→ 行对象
-  const evRows = (bid) => load('ev_' + bid).then((E) => E.rows.map((r) => ({ b: bid, ci: r[0], n: r[1], v: r[2], t: r[3], rel: r[4], q: r[5], ctx: r[6], doc: r[7], date: r[8], url: r[9], arc: r[10] })))
-    .catch(() => []);
+  // 正在读时显示的一行（后面那句由上面的计时器填）
+  const waiting = (t) => `<p class="loading">${t}<span class="wait"></span></p>`;
+  // 读不到时写明原因，给“再试一次”：只重读没读到的文件，不用刷新整页
+  function failBox(el, e, again) {
+    if (!el) return;
+    if (!(e && e.load)) note(`显示出错：${e && e.message}`);
+    el.innerHTML = `<div class="loadfail"><p>${e && e.load ? '这一部分的资料没读到' : '这一页显示出错'}：${esc(e && e.message)}。</p>` +
+      (e && e.load ? '<p class="muted">多半是网络断了一下，或者放网页的服务器一时没有响应。点下面重读，不用刷新整页。</p>' : '') +
+      '<button class="retry" type="button">再试一次</button>　<a href="#diag" style="font-size:13px">连接记录</a></div>';
+    $('button.retry', el).addEventListener('click', (ev) => { ev.stopPropagation(); (again || route)(); });
+  }
+  // 一块的证据（一块一个文件）→ 行对象；读不到时把错误交给调用它的页面
+  const evRows = (bid) => load('ev_' + bid).then((E) => E.rows.map((r) => ({ b: bid, ci: r[0], n: r[1], v: r[2], t: r[3], rel: r[4], q: r[5], ctx: r[6], doc: r[7], date: r[8], url: r[9], arc: r[10] })));
 
   // ---------- 提示框和证据框 ----------
   const tip = $('#tip');
@@ -229,7 +332,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
   const dlg = $('#ev');
   $('#ev-x').addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-  function openEv(html) { $('#ev-in').innerHTML = html; if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
+  function openEv(html) { $('#ev-in').innerHTML = html; if (dlg.open) return; if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
   function localLink(p) {
     if (MODE !== 'local' || !p) return '';
     const full = p.startsWith('/') ? p : ROOT + p;
@@ -240,13 +343,16 @@ table.mx td small { opacity: .8; margin-left: 3px; }
     return fallback ? `<div class="quote">${esc(fallback)}</div>` : '';
   }
   function showRef(rid) {
+    // 先把框打开写“正在读”（第一次要读出处文件），读完再填；读的时候框被关了就不再打开
+    openEv('<h3>出处</h3>' + waiting('正在读…'));
     load('refs').then((R) => {
-      const r = R[rid]; if (!r) return;
+      if (!dlg.open) return;
+      const r = R[rid]; if (!r) { dlg.close(); return; }
       const nums = r.nums && r.nums.length ? `<dt>这里引的数</dt><dd>${r.nums.map(esc).join('、')}</dd>` : '';
       const body = r.ctx ? `<p class="muted" style="margin:0 0 4px;font-size:13px">原文里这个数前后的一段（从存档的文字里按数找到的）：</p>${ctxHtml(r.ctx)}`
         : `<p class="muted" style="font-size:13px">这份文件的文字里没有自动找到这句话引的数${r.nums && r.nums.length ? '' : '（这句话没有引数）'}；请点原文核对。</p>`;
       openEv(`<h3>${esc(r.label)}</h3>${body}<dl class="kv">${nums}<dt>原文</dt><dd><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a></dd>${localLink(r.local)}</dl>`);
-    });
+    }).catch((e) => { if (!dlg.open) return; openEv('<h3>出处</h3><div></div>'); failBox($('#ev-in div'), e, () => showRef(rid)); });
   }
   document.addEventListener('click', (e) => { const b = e.target.closest('.evb'); if (b) { e.preventDefault(); showRef(b.dataset.ref); } });
   function evRowHtml(r, withCompany) {
@@ -351,7 +457,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
   }
   function sectionPage(sid, subid) {
     if (!CORE.sections.find((s) => s.id === sid)) return notFound();
-    view.innerHTML = '<div class="page"><p class="loading">正在读…</p></div>';
+    view.innerHTML = `<div class="page">${waiting('正在读…')}</div>`;
     const ok = live();
     load('report_' + sid).then(ok((sec) => {
       const subs = sec.subs, cur = subs.find((s) => s.id === subid) || null;
@@ -373,12 +479,12 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       }
       view.innerHTML = html + '</div>';
       mountCharts(view);
-    }));
+    })).catch(ok((e) => failBox($('.page', view), e)));
   }
 
   function home() {
     const va = CORE.venues_all;
-    view.innerHTML = '<div class="page"><p class="loading">正在读…</p></div>';
+    view.innerHTML = `<div class="page">${waiting('正在读…')}</div>`;
     const ok = live();
     load('report_' + CORE.sections[0].id).then(ok((s1) => {
       view.innerHTML = `<div class="page"><h1 class="ptitle">${titleHtml(CORE.title)}</h1>` +
@@ -389,7 +495,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
         `<a class="card" href="#map"><b>分布地球仪</b><span>公司总部在哪些城市，按大块分</span></a><a class="card" href="#list"><b>各块公司名单</b><span>按块、档位、上市地筛选，每行有证据</span></a><a class="card" href="#robots"><b>整机厂名单</b><span>一家整机厂的一种类型一行</span></a></div></div>`;
       mountCharts(view);
       const m = $('.asof-more', view); if (m) m.addEventListener('click', (e) => { e.preventDefault(); showAsof(); });
-    }));
+    })).catch(ok((e) => failBox($('.page', view), e)));
   }
 
   function vbar(counts) {
@@ -454,10 +560,11 @@ table.mx td small { opacity: .8; margin-left: 3px; }
         const nx = tr.nextElementSibling;
         if (nx && nx.classList.contains('detail')) { nx.remove(); return; }
         const r = part[+tr.dataset.i];
-        tr.insertAdjacentHTML('afterend', `<tr class="detail"><td colspan="${ncol}"><p class="loading" style="padding:4px 0">正在读证据…</p></td></tr>`);
+        tr.insertAdjacentHTML('afterend', `<tr class="detail"><td colspan="${ncol}"><p class="loading" style="padding:4px 0">正在读证据…<span class="wait"></span></p></td></tr>`);
         const cell = tr.nextElementSibling.firstElementChild;
         (r.q !== undefined ? Promise.resolve(r) : evRows(r.b).then((rs2) => rs2.find((x) => x.ci === r.ci) || r))
-          .then((full) => { cell.innerHTML = full.q !== undefined ? evRowHtml(full, false) : '<p class="muted">这一行的证据没读出来。</p>'; });
+          .then((full) => { cell.innerHTML = full.q !== undefined ? evRowHtml(full, false) : '<p class="muted">这一行的证据没读出来。</p>'; })
+          .catch((e) => failBox(cell, e, () => { cell.parentNode.remove(); tr.click(); }));
       }));
       pager($('.pager', holder), st.page, pages, (p) => { st.page = p; draw(); holder.scrollIntoView(); });
     }
@@ -472,12 +579,14 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       (B.dates && B.dates.n ? `<dt>证据有多新</dt><dd>确认在做的 ${B.dates.n} 条证据里，${B.dates.n2025} 条是 2025 年以后的文件，最新的文件是 ${esc(B.dates.latest || '—')} 的` +
         (B.dates.crawl ? `；另有 ${B.dates.crawl} 条来自官网、展会页这类没有日期的网页，按抓取日算` : '') + `。${CORE.asof ? '资料截至 ' + esc(asofShort()) + '。' : ''}</dd>` : '') +
       `<dt>在哪些城市</dt><dd><a href="#map-${esc(bid)}">在地球仪上看这一块的公司 →</a></dd></dl>` +
-      `<div id="bt"><p class="loading">正在读这一块的名单…</p></div></div>`;
-    evRows(bid).then(live()((rows) => evTable($('#bt'), rows, {})));
+      `<div id="bt">${waiting('正在读这一块的名单…')}</div></div>`;
+    const ok = live();
+    evRows(bid).then(ok((rows) => evTable($('#bt'), rows, {}))).catch(ok((e) => failBox($('#bt'), e)));
   }
 
   function companyPage(i) {
-    view.innerHTML = '<div class="page"><p class="loading">正在读…</p></div>';
+    if (!Number.isInteger(i) || i < 0) return notFound();
+    view.innerHTML = `<div class="page">${waiting('正在读…')}</div>`;
     const ok = live();
     load('co_' + String(i % (CORE.co_shards || 64)).padStart(2, '0')).then(ok((S) => {
       const C = S.rows[String(i)]; if (!C) return notFound();
@@ -488,7 +597,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       const rs = C.ev.map((r) => ({ b: r[0], ci: i, n: c[0], v: c[1], t: r[1], rel: r[2], q: r[3], ctx: r[4], doc: r[5], date: r[6], url: r[7], arc: r[8] }))
         .sort((a, b) => a.t.localeCompare(b.t) || a.b.localeCompare(b.b));
       $('#cev').innerHTML = rs.map((r) => `<div style="margin:0 0 18px"><h3 style="font-size:15px;margin:0 0 4px"><a href="#blk-${r.b}">${esc(r.b)} ${esc(CORE.blocks[r.b] ? CORE.blocks[r.b].name : '')}</a>　<span class="tag"><span class="sw" style="background:${TIER[r.t][1]}"></span>${r.t} ${TIER[r.t][0]}</span></h3>${evRowHtml(r, false)}</div>`).join('');
-    })).catch(ok(() => notFound()));
+    })).catch(ok((e) => failBox($('.page', view), e)));   // 读不到不是“没有这一页”：写明原因，给重读
   }
 
   function locHtml(L) {
@@ -500,16 +609,18 @@ table.mx td small { opacity: .8; margin-left: 3px; }
     return `<dt>总部在</dt><dd>${where}${how ? `<br><span class="muted" style="font-size:12.5px">依据：${esc(how)}${url ? `　<a href="${esc(url)}" target="_blank" rel="noopener">出处</a>` : ''}</span>` : ''}</dd>`;
   }
   function listPage() {
-    view.innerHTML = `<div class="page wide"><h1 class="ptitle">各块公司名单</h1><p class="lead">每块每家一行，含“只是概念”。点公司名打开这家公司的全部证据；点一行展开这一行的证据原句、上下文和出处。</p><div id="lt"><p class="loading">正在读名单…</p></div></div>`;
-    load('list').then(live()((L) => {
+    view.innerHTML = `<div class="page wide"><h1 class="ptitle">各块公司名单</h1><p class="lead">每块每家一行，含“只是概念”。点公司名打开这家公司的全部证据；点一行展开这一行的证据原句、上下文和出处。</p><div id="lt">${waiting('正在读名单…')}</div></div>`;
+    const ok = live();
+    load('list').then(ok((L) => {
       const rows = L.rows.map(([bi, ci, t, rel]) => ({ b: L.blocks[bi], ci, n: L.names[ci][0], v: L.names[ci][1], al: L.names[ci][2], t, rel }));
       evTable($('#lt'), rows, { blocks: L.blocks });
-    }));
+    })).catch(ok((e) => failBox($('#lt'), e)));
   }
 
   function robotsPage() {
-    view.innerHTML = `<div class="page wide"><h1 class="ptitle">整机厂名单</h1><p class="lead">一行是一家整机厂的一种类型。走到哪一步按公司自己的文件、官网、发布会原文定；“不做整机”的是查过、只投资、合作或做平台的。点一行展开原句、出货、价格和出处。</p><div id="rt"><p class="loading">正在读名单…</p></div></div>`;
-    load('robots').then(live()((R) => {
+    view.innerHTML = `<div class="page wide"><h1 class="ptitle">整机厂名单</h1><p class="lead">一行是一家整机厂的一种类型。走到哪一步按公司自己的文件、官网、发布会原文定；“不做整机”的是查过、只投资、合作或做平台的。点一行展开原句、出货、价格和出处。</p><div id="rt">${waiting('正在读名单…')}</div></div>`;
+    const ok = live();
+    load('robots').then(ok((R) => {
       const C = {}; R.cols.forEach((c, i) => { C[c] = i; });
       const stg = (r) => r[C['阶段']] || ((/^(量产|对外销售|试点或小批量|样机或研发|只有宣布|不做整机)/.exec(r[C['现在走到哪一步']] || '') || [])[1] || '');
       R.rows.forEach((r) => { r._s = stg(r); r._r = r[C['地区']] || '其他'; r._g = r[C['资料完整度']] || ''; });
@@ -545,11 +656,28 @@ table.mx td small { opacity: .8; margin-left: 3px; }
         pager($('#rt .pager'), st.page, pages, (p) => { st.page = p; draw(); $('#rt').scrollIntoView(); });
       }
       draw();
-    }));
+    })).catch(ok((e) => failBox($('#rt'), e)));
   }
   function guidePage() {
-    view.innerHTML = '<div class="page"><h1 class="ptitle">资料索引和维护办法</h1><div class="prose" id="gd"><p class="loading">正在读…</p></div></div>';
-    load('guide').then(live()((g) => { $('#gd').innerHTML = g.html; }));
+    view.innerHTML = `<div class="page"><h1 class="ptitle">资料索引和维护办法</h1><div class="prose" id="gd">${waiting('正在读…')}</div></div>`;
+    const ok = live();
+    load('guide').then(ok((g) => { $('#gd').innerHTML = g.html; })).catch(ok((e) => failBox($('#gd'), e)));
+  }
+  function diagPage() {
+    let L = []; try { L = JSON.parse(localStorage.getItem(LOGK) || '[]'); } catch (e) { /* 读不了就是空的 */ }
+    const txt = L.slice().reverse().join('\n');
+    view.innerHTML = `<div class="page"><h1 class="ptitle">${titleHtml('连接记录：这个浏览器读网站资料的情况')}</h1>` +
+      `<p class="lead">最近 ${L.length} 条，新的在上面。只存在这个浏览器里，不会发到任何地方。网页卡住或读不到时，把这些记录复制下来发给我，就能看出是哪个文件、是断了还是卡住、在什么时候。</p>` +
+      `<p><button class="retry dg-copy" type="button">复制记录</button>　<button class="retry dg-clear" type="button">清空</button>　<span class="muted dg-msg" style="font-size:13px"></span></p>` +
+      `<pre class="dg" style="white-space:pre-wrap;font-size:12.5px;background:var(--sunk);padding:10px 12px;border-radius:6px;overflow-wrap:anywhere">${esc(txt || '还没有记录。')}</pre>` +
+      `<p class="muted" style="font-size:12.5px">网页版本 ${esc(BUILT)}；浏览器 ${esc(navigator.userAgent)}</p></div>`;
+    const msg = $('.dg-msg', view);
+    $('.dg-copy', view).addEventListener('click', () => {
+      const all = `网页版本 ${BUILT}\n浏览器 ${navigator.userAgent}\n${txt}`;
+      const sel = () => { const r = document.createRange(); r.selectNodeContents($('pre.dg', view)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); msg.textContent = '已选中，按 Ctrl+C（手机上长按）复制。'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(all).then(() => { msg.textContent = '已复制。'; }, sel); else sel();
+    });
+    $('.dg-clear', view).addEventListener('click', () => { try { localStorage.removeItem(LOGK); } catch (e) { /* 清不了就算了 */ } route(); });
   }
   // ---------- 资料截至哪天 ----------
   function asofShort() { return CORE.asof ? CORE.asof.last.local.slice(0, 10) : ''; }
@@ -569,11 +697,21 @@ table.mx td small { opacity: .8; margin-left: 3px; }
     '乌克兰', '冰岛', '列支敦士登', '马耳他', '塞浦路斯']);
   const REG = ['中国大陆', '中国台湾', '中国港澳', '美国', '日本', '韩国', '德国', '欧洲其他', '其他'];
   const regionOf = (c) => (['中国大陆', '中国台湾', '美国', '日本', '韩国', '德国'].includes(c) ? c : (c === '中国香港' || c === '中国澳门') ? '中国港澳' : EUROPE.has(c) ? '欧洲其他' : '其他');
-  const GEO_LIBS = ['https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js', 'https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js',
-    'https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js'];
-  let libsP = null;
-  const addScript = (src) => new Promise((ok, no) => { const el = document.createElement('script'); el.src = src; el.onload = ok; el.onerror = () => no(new Error(src)); document.head.appendChild(el); });
-  const getLibs = () => libsP || (libsP = GEO_LIBS.reduce((p, u) => p.then(() => addScript(u)), Promise.resolve()).catch((e) => { libsP = null; throw e; }));
+  // 画地球仪的三个小程序：先读网站自己的 lib/ 里的一份，读不到再读 cdn.jsdelivr.net 上的（同一版本）
+  const GEO_LIBS = [['lib/d3-array.min.js', 'https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js'],
+    ['lib/d3-geo.min.js', 'https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js'],
+    ['lib/topojson-client.min.js', 'https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js']];
+  let libsP = null, libsWhy = '', libsTry = 0;
+  // 一个地方 10 秒没读完就当卡住，换另一个地方。点“再试一次”时地址后面加 ?r=N，浏览器就不会把它并到前一次卡住的请求上
+  const addScript = (srcs, i = 0) => new Promise((ok, no) => {
+    const el = document.createElement('script'); el.src = srcs[i] + (libsTry ? `?r=${libsTry}` : '');
+    const t = setTimeout(() => { el.onload = el.onerror = null; no(new Error('10 秒没读完')); }, 10000);
+    el.onload = () => { clearTimeout(t); ok(); };
+    el.onerror = () => { clearTimeout(t); no(new Error('连不上')); };
+    document.head.appendChild(el);
+  }).catch((e) => { if (i + 1 >= srcs.length) throw new Error(`${srcs[0].split('/').pop()} ${e.message}`); return addScript(srcs, i + 1); });
+  const getLibs = () => libsP || (libsP = GEO_LIBS.reduce((p, u) => p.then(() => addScript(u)), Promise.resolve())
+    .catch((e) => { libsP = null; libsWhy = e.message; libsTry += 1; note(`画地球仪的小程序没读到：${e.message}`); throw e; }));
   // 预设的视角：名字、中心经度、中心纬度、放大倍数
   const VIEWS = [['亚太', 112, 26, 1.1], ['中国', 110, 32, 2.6], ['长三角', 120.6, 30.9, 13], ['珠三角', 113.6, 22.8, 16], ['京津冀', 116.8, 39.4, 11],
     ['日本', 137, 36, 4.2], ['韩国', 127.6, 36.4, 9], ['台湾', 120.9, 23.7, 10], ['欧洲', 10, 50, 2.8], ['北美', -97, 40, 2.2]];
@@ -581,11 +719,11 @@ table.mx td small { opacity: .8; margin-left: 3px; }
 
   function mapPage(arg) {
     view.innerHTML = `<div class="page wide"><h1 class="ptitle">${titleHtml('分布地球仪：每家公司的总部在哪个城市')}</h1><p class="lead">一个点是一个城市，位置是公司实际经营的总部（管理层和主要业务所在地）所在的城市，不是注册地、上市地，也不是工厂。点越大，这个城市的公司越多。` +
-      `拖动转地球，滚轮或两指缩放；点一个城市，右边列出这里的公司。</p><div id="mp"><p class="loading">正在读…</p></div></div>`;
+      `拖动转地球，滚轮或两指缩放；点一个城市，右边列出这里的公司。</p><div id="mp">${waiting('正在读…')}</div></div>`;
     const ok = live();
-    Promise.all([load('geo'), getComp(), load('land110')]).then(ok(([G, , land]) => {
-      getLibs().then(ok(() => buildMap($('#mp'), G, land, arg, true))).catch(ok(() => buildMap($('#mp'), G, land, arg, false)));
-    })).catch(ok((e) => { $('#mp').innerHTML = `<p>数据没读出来（${esc(e.message)}）。刷新页面再试一次。</p>`; }));
+    Promise.all([load('geo'), getComp(), load('land110')]).then(ok(([G, , land]) =>
+      getLibs().then(ok(() => buildMap($('#mp'), G, land, arg, true))).catch(ok(() => buildMap($('#mp'), G, land, arg, false)))
+    )).catch(ok((e) => failBox($('#mp'), e)));
   }
 
   function buildMap(holder, G, land, arg, libsOk) {
@@ -607,7 +745,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       `“整机厂名单”页按每家机器人的类型另数，人形、四足、轮足的整机厂是 393 家，也包括只宣布、只有样机的。</p>` +
       (libsOk ? `<div class="views">${VIEWS.map((v, i) => `<button class="chip" data-v="${i}">${v[0]}</button>`).join('')}</div>` : '') +
       `<div class="mapwrap"><div class="globe">${libsOk ? '<canvas aria-label="地球仪：各城市的公司数（同样的数在右边和下面的表里）"></canvas><div class="gbtns"><button class="g-in" aria-label="放大">+</button><button class="g-out" aria-label="缩小">−</button></div><div class="gleg"></div>'
-        : '<p class="loading" style="padding:16px">画地球仪的小程序没读到（要联网读 cdn.jsdelivr.net 上的 d3-geo）。右边和下面的统计不受影响。</p>'}</div>` +
+        : `<div class="loadfail" style="margin:12px">画地球仪的小程序没读到（${esc(libsWhy || '出错了')}；网站自己和 cdn.jsdelivr.net 上各放了一份，都没读到）。右边和下面的统计不受影响。<p style="margin:8px 0 0"><button class="retry m-relib" type="button">再试一次</button></p></div>`}</div>` +
       `<div class="side"><div class="selbox m-sel" hidden></div><h3>国家和地区</h3><div class="m-cty"></div><h3 style="margin-top:12px">城市（前 15）</h3><div class="m-city"></div></div></div>` +
       `<h2 class="stitle">每一大块的公司在哪些国家和地区</h2><p class="lead">一行一个大块，数是公司家数；一家做几个大块，每个大块各算一次。颜色越深，占这一大块（定到城市的公司）的比例越高。点大块名，地球仪只看这一大块。</p><div class="gridwrap m-mx1"></div>` +
       `<h2 class="stitle">中国大陆的公司在哪些省</h2><p class="lead">同上，只算总部在中国大陆的公司；比例是占这一大块中国大陆公司的比例。</p><div class="gridwrap m-mx2"></div>` +
@@ -615,6 +753,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       `<p class="muted" style="font-size:12.5px;margin-top:14px">所在地依据：上市公司用交易所登记的地址（A 股、新三板和港股用东方财富 F10，美股用 SEC，日本用 EDINET，韩国用 KRX KIND，台湾用证交所和柜买中心）；只在香港、开曼、新加坡、爱尔兰等地登记而实际在别处经营的，按实际经营的总部；没上市的按公司全称里的地名、Wikidata 的总部条目，或官网、年报逐家查。每家的依据写在公司页上。${G.checked ? esc(G.checked) + ' 查。' : ''}地图：Natural Earth（只画陆地）；城市坐标：GeoNames（CC BY 4.0）、Wikidata。</p>`;
     const $m = (c) => $(c, holder);
     const ok = live();
+    if (!libsOk) $m('.m-relib').addEventListener('click', route);
     function blkOptions() {
       const bl = st.big ? CORE.bigs.find((g) => g.id === st.big).blocks : [];
       $m('.m-blk').innerHTML = `<option value="">${st.big ? '这一大块全部' : '先选大块'}</option>` + (st.big === 'A' ? '<option value="robots">A01–A03 人形和足式整机</option>' : '') +
@@ -720,8 +859,13 @@ table.mx td small { opacity: .8; margin-left: 3px; }
     $m('.m-robot').addEventListener('click', () => { const on = st.blk !== 'robots'; st.big = on ? 'A' : ''; st.blk = on ? 'robots' : ''; $m('.m-big').value = st.big; blkOptions(); $m('.m-robot').setAttribute('aria-pressed', String(on)); syncHash(); render(); });
 
     // ---- 地球仪（d3-geo 正射投影，画在 canvas 上） ----
-    let cv, ctx, proj, path, W = 0, H = 0, R0 = 1, zoom = 1, rot = [-112, -26], landF, land50F = null, land50P = null, grat, dots = [], hover = null, raf = 0;
-    const rad = (n) => { const mx = Math.max(1, ...cur.byCity.values()); return (1.8 + Math.sqrt(n / mx) * 12.5) * Math.pow(zoom, 0.33); };
+    let cv, ctx, proj, path, W = 0, H = 0, R0 = 1, zoom = 1, rot = [-112, -26], landF, land50F = null, land50P = null, land50Fail = 0, grat, dots = [], hover = null, raf = 0;
+    // 点的大小按当前筛选里公司最多的城市定。“最多”每画一帧只算一次（以前每个点都把 900 个城市重算一遍，拖动时一半的时间花在这里）
+    let radMax = 1;
+    const rad = (n) => (1.8 + Math.sqrt(n / radMax) * 12.5) * Math.pow(zoom, 0.33);
+    // 拖动、缩放、飞过去的时候画粗海岸线（快）；停下 0.2 秒后用细的重画一遍（细的一帧要画全世界的海岸线，慢的手机上一帧要 0.25 秒）
+    let lastMove = 0, settle = 0;
+    const moving = () => { lastMove = performance.now(); clearTimeout(settle); settle = setTimeout(req, 220); };
     let resize = null;
     function select(k, fly) { st.sel = k; renderSel(); if (libsOk) { if (fly && k != null) flyTo(C[k].lon, C[k].lat, Math.max(zoom, 8)); else draw(); } }
     if (libsOk) {
@@ -734,7 +878,9 @@ table.mx td small { opacity: .8; margin-left: 3px; }
         if (!cv.isConnected) return;
         const w = cv.parentElement.clientWidth, h = Math.round(Math.min(Math.max(w * 0.8, 320), 680)), dpr = window.devicePixelRatio || 1;
         cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        W = w; H = h; R0 = Math.min(w, h) / 2 - 8; draw();
+        W = w; H = h; R0 = Math.min(w, h) / 2 - 8;
+        proj.clipExtent([[-10, -10], [W + 10, H + 10]]);   // 画布外面的海岸线不画（剪开的边落在画布外，看不见）
+        draw();
       };
       if (window.ResizeObserver) new ResizeObserver(ok(resize)).observe(cv.parentElement); else window.addEventListener('resize', ok(resize));
       holder.querySelectorAll('.views button').forEach((b) => b.addEventListener('click', () => { const v = VIEWS[+b.dataset.v]; flyTo(v[1], v[2], v[3]); }));
@@ -750,7 +896,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
         ptrs.set(e.pointerId, [e.clientX, e.clientY]);
         if (ptrs.size === 2 && pinch) { const [a, b] = [...ptrs.values()]; zoomTo(pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d); moved += 10; return; }
         const dx = e.clientX - last[0], dy = e.clientY - last[1]; last = [e.clientX, e.clientY]; moved += Math.abs(dx) + Math.abs(dy);
-        const k = 57.3 / (R0 * zoom); rot = [rot[0] + dx * k, Math.max(-85, Math.min(85, rot[1] - dy * k))]; hideTip(); req();
+        const k = 57.3 / (R0 * zoom); rot = [rot[0] + dx * k, Math.max(-85, Math.min(85, rot[1] - dy * k))]; hideTip(); moving(); req();
       });
       const up = (e) => { if (!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null;
         if (!ptrs.size) { cv.classList.remove('drag'); if (moved < 6 && e.type === 'pointerup') { const d = nearest(e); select(d ? d.k : null, false); } } };
@@ -765,8 +911,9 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       return `<b>${esc(cname(c))}</b>　${esc(cwhere(c))}<br>当前筛选 ${d.n} 家${st.big || st.blk ? '' : '，最多的大块：<br>' + top}<br><span style="opacity:.75">点一下看名单</span>`;
     }
     function zoomTo(z) {
-      zoom = Math.max(1, Math.min(40, z));
-      if (zoom >= 3 && !land50F && !land50P) land50P = load('land50').then(ok((t) => { land50F = topojson.feature(t, t.objects.land); req(); })).catch(() => {});
+      zoom = Math.max(1, Math.min(40, z)); moving();
+      // 细一点的海岸线放大后才读；没读到就先用粗的，30 秒后再放大时重读
+      if (zoom >= 3 && !land50F && !land50P && Date.now() - land50Fail > 30000) land50P = load('land50').then(ok((t) => { land50F = topojson.feature(t, t.objects.land); req(); })).catch(() => { land50P = null; land50Fail = Date.now(); });
       req();
     }
     function flyTo(lon, lat, z) {
@@ -776,7 +923,7 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       const step = (now) => {
         if (!cv.isConnected) return;
         const t = Math.min(1, (now - t0) / T), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-        rot = [r0[0] + dl * e, r0[1] + dp * e]; zoom = z0 * Math.pow(z / z0, e); draw();
+        rot = [r0[0] + dl * e, r0[1] + dp * e]; zoom = z0 * Math.pow(z / z0, e); moving(); draw();
         if (t < 1) requestAnimationFrame(step); else zoomTo(z);
       };
       requestAnimationFrame(step);
@@ -794,9 +941,11 @@ table.mx td small { opacity: .8; margin-left: 3px; }
       ctx.clearRect(0, 0, W, H);
       ctx.beginPath(); path({ type: 'Sphere' }); ctx.fillStyle = v('--globe-sea'); ctx.fill();
       ctx.beginPath(); path(grat); ctx.strokeStyle = v('--globe-grid'); ctx.lineWidth = 0.6; ctx.stroke();
-      ctx.beginPath(); path(zoom >= 3 && land50F ? land50F : landF); ctx.fillStyle = v('--globe-land'); ctx.fill(); ctx.strokeStyle = v('--globe-coast'); ctx.lineWidth = 0.6; ctx.stroke();
+      const fine = zoom >= 3 && land50F && performance.now() - lastMove > 200;
+      ctx.beginPath(); path(fine ? land50F : landF); ctx.fillStyle = v('--globe-land'); ctx.fill(); ctx.strokeStyle = v('--globe-coast'); ctx.lineWidth = 0.6; ctx.stroke();
       ctx.beginPath(); path({ type: 'Sphere' }); ctx.strokeStyle = v('--line'); ctx.lineWidth = 1; ctx.stroke();
       const center = [-rot[0], -rot[1]], acc = v('--accent'), ring = v('--surface');
+      radMax = Math.max(1, ...cur.byCity.values());
       dots = [];
       for (const [k, n] of cur.byCity) {
         const c = C[k];
@@ -844,38 +993,56 @@ table.mx td small { opacity: .8; margin-left: 3px; }
     else if (h === 'list') listPage();
     else if (h === 'robots') robotsPage();
     else if (h === 'guide') guidePage();
+    else if (h === 'diag') diagPage();
     else if (h === 'map' || h.startsWith('map-')) mapPage(h.slice(4));
     else notFound();
     window.scrollTo(0, 0);
   }
 
   // ---------- 搜索 ----------
-  let INDEX = null;
+  // 块名一开始就能搜；全部公司（companies）第一次输入时才读。还没读完或没读到时，下拉框最后一行写明只搜了块名；没读到的，改一下搜索词会重读
+  let INDEX = null, compSt = '', compWhy = '';
   const q = $('#q'), qres = $('#qres');
-  q.addEventListener('input', () => {
+  function searchShow() {
     const s = q.value.trim().toLowerCase();
-    if (!s) { qres.hidden = true; return; }
-    if (!INDEX) {
-      INDEX = Object.entries(CORE.blocks).map(([b, B]) => ({ t: `${b} ${B.name}`, k: (b + ' ' + B.name + ' ' + B.product).toLowerCase(), h: 'blk-' + b, m: '块' }));
+    if (!s || !INDEX) { qres.hidden = true; return; }
+    const hits = INDEX.filter((x) => x.k.includes(s)).sort((a, b) => (a.k.indexOf(s) - b.k.indexOf(s)) || a.t.length - b.t.length).slice(0, 14);
+    const note = compSt === 'loading' ? '正在读公司名单，现在只搜了块名…' : compSt === 'failed' ? `公司名单没读到（${compWhy}），只搜了块名；改一下搜索词会重读` : '';
+    qres.innerHTML = (hits.length ? hits.map((x) => `<a href="#${esc(x.h)}">${esc(x.t)} <small>${esc(x.m)}</small></a>`).join('') : note ? '' : '<a>没有找到</a>') +
+      (note ? `<a><small>${esc(note)}</small></a>` : '');
+    qres.hidden = false;
+  }
+  q.addEventListener('input', () => {
+    if (!CORE) return;
+    if (!INDEX) INDEX = Object.entries(CORE.blocks).map(([b, B]) => ({ t: `${b} ${B.name}`, k: (b + ' ' + B.name + ' ' + B.product).toLowerCase(), h: 'blk-' + b, m: '块' }));
+    if (q.value.trim() && compSt !== 'ok' && compSt !== 'loading') {
+      compSt = 'loading';
       getComp().then(() => {
         INDEX = INDEX.concat(COMP.rows.map((c, i) => ({ t: c[0], k: (c[0] + ' ' + (c[4] || []).join(' ') + ' ' + c[3]).toLowerCase(), h: 'co-' + i, m: c[1] + '，' + c[5].length + ' 块' })));
-        q.dispatchEvent(new Event('input'));
-      });
+        compSt = 'ok'; searchShow();
+      }, (e) => { compSt = 'failed'; compWhy = e.message; searchShow(); });
     }
-    const hits = INDEX.filter((x) => x.k.includes(s)).sort((a, b) => (a.k.indexOf(s) - b.k.indexOf(s)) || a.t.length - b.t.length).slice(0, 14);
-    qres.innerHTML = hits.length ? hits.map((x) => `<a href="#${esc(x.h)}">${esc(x.t)} <small>${esc(x.m)}</small></a>`).join('') : '<a>没有找到</a>';
-    qres.hidden = false;
+    searchShow();
   });
   q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const a = $('a[href]', qres); if (a) { location.hash = a.getAttribute('href'); q.blur(); } } });
   document.addEventListener('click', (e) => { if (!e.target.closest('.search')) qres.hidden = true; });
   qres.addEventListener('click', () => { q.value = ''; qres.hidden = true; });
 
-  load('core').then((c) => {
-    CORE = c;
-    if (CORE.preview) { $('#banner').hidden = false; $('#banner div').textContent = CORE.preview; }
-    if (CORE.asof) { const b = $('#asof'); b.textContent = '资料截至 ' + asofShort(); b.title = asofText(); b.hidden = false; b.addEventListener('click', showAsof); }
-    window.addEventListener('hashchange', route);
-    route();
-  }).catch((e) => { view.innerHTML = `<div class="page"><p>数据没读出来（${esc(e.message)}）。刷新页面再试一次。</p></div>`; });
+  // 打开网站：先读 core（目录、各块家数、图的数据），读不到就写明原因，给“再试一次”
+  function start() {
+    view.innerHTML = waiting('正在打开…');
+    load('core').then((c) => {
+      CORE = c;
+      if (CORE.preview) { $('#banner').hidden = false; $('#banner div').textContent = CORE.preview; }
+      if (CORE.asof) { const b = $('#asof'); b.textContent = '资料截至 ' + asofShort(); b.title = asofText(); b.hidden = false; b.addEventListener('click', showAsof); }
+      window.addEventListener('hashchange', route);
+      route();
+      setTimeout(prefetch, 1500);
+    }).catch((e) => failBox(view, e, start));
+  }
+  // 第一页出来以后，后台按顺序把报告各部分先读好（一共约 130 KB）：之后在报告里点来点去不用再等网络。读不到的不报错，点到那一页时再读
+  function prefetch() { CORE.sections.reduce((p, s) => p.then(() => load('report_' + s.id, true).catch(() => {})), Promise.resolve()); }
+  note(`打开网站，网页版本 ${BUILT}`);
+  start();
 })();
 </script>
