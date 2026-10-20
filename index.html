@@ -1,7 +1,9 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
 <title>拆开人形机器人</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap">
 <style>
 /* 版式：顶栏（名字、搜索、各部分导航）+ 一栏内容；长的部分按小节分页，名单页是筛选条 + 分页的表 */
 :root {
@@ -9,8 +11,9 @@
   --accent: #1c5cc0; --accent-soft: #e2eaf8; --mark: #fff0b8; --banner: #fff4dc; --banner-fg: #5a4200;
   --v-a: #2a78d6; --v-unl: #eb6834; --v-hkus: #1baf7a; --v-oth: #eda100; --v-unk: #a3a8ae;
   --t-a: #0d3b78; --t-b: #2a78d6; --t-c: #7fb0ea; --t-d: #c4c3b9; --t-x: #a9a89e; --t-e: #c9dcf5; --t-ann: #e4e3dc;
-  --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
-  --sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  /* 只用系统自带的中文字体，不下载网络字体（一页中文要下载上百个字体切片，最慢的就是它） */
+  --serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+  --sans: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -99,7 +102,7 @@ h2.stitle { font-family: var(--serif); font-size: 1.35rem; line-height: 1.4; mar
 .tip { position: fixed; z-index: 60; pointer-events: none; background: var(--fg); color: var(--bg); font-size: 12.5px; line-height: 1.45; padding: 7px 10px; border-radius: 6px; max-width: 320px; }
 /* 名单 */
 .filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; }
-.filters label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); min-width: 0; }
+.filters label { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; font-size: 12px; color: var(--muted); min-width: 0; max-width: 100%; }
 .filters select, .filters input { font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; max-width: 100%; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
@@ -173,7 +176,14 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
     return cache[name];
   }
   const view = $('#view');
-  let CORE, REPORT, COMP;
+  let CORE, COMP;
+  const getComp = () => load('companies').then((c) => (COMP = c));
+  // 读数据是异步的：读完时如果已经换了页，就不往页面里写（快速连点两块时，前一块的名单不能写进后一块的页面）
+  let SEQ = 0;
+  const live = () => { const n = SEQ; return (f) => (x) => (n === SEQ ? f(x) : undefined); };
+  // 一块的证据（一块一个文件）→ 行对象
+  const evRows = (bid) => load('ev_' + bid).then((E) => E.rows.map((r) => ({ b: bid, ci: r[0], n: r[1], v: r[2], t: r[3], rel: r[4], q: r[5], ctx: r[6], doc: r[7], date: r[8], url: r[9], arc: r[10] })))
+    .catch(() => []);
 
   // ---------- 提示框和证据框 ----------
   const tip = $('#tip');
@@ -207,15 +217,13 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
   }
   document.addEventListener('click', (e) => { const b = e.target.closest('.evb'); if (b) { e.preventDefault(); showRef(b.dataset.ref); } });
   function evRowHtml(r, withCompany) {
-    // r: [块, 公司序号, 档位, 关系, 原句, 上下文, 文件, 日期, 链接, 本地存档, 办法, 上市地原文]
-    const c = COMP.rows[r[1]], b = CORE.blocks[r[0]];
-    return `${withCompany ? `<h3><a href="#co-${r[1]}">${esc(c[0])}</a></h3>` : ''}${ctxHtml(r[5], r[4])}<dl class="kv">` +
-      `<dt>块</dt><dd><a href="#blk-${esc(r[0])}">${esc(r[0])} ${esc(b ? b.name : '')}</a></dd><dt>档位</dt><dd>${r[2]} ${TIER[r[2]][0]}</dd>` +
-      `<dt>和机器人</dt><dd>${esc(r[3])}</dd><dt>文件</dt><dd>${esc(r[6])}${r[7] ? '（' + esc(r[7]) + '）' : ''}</dd>` +
-      `<dt>原文</dt><dd>${r[8] ? `<a href="${esc(r[8])}" target="_blank" rel="noopener">${esc(r[8])}</a>` : '<span class="muted">没有链接</span>'}</dd>${localLink(r[9])}</dl>`;
+    const b = CORE.blocks[r.b];
+    return `${withCompany ? `<h3><a href="#co-${r.ci}">${esc(r.n)}</a></h3>` : ''}${ctxHtml(r.ctx, r.q)}<dl class="kv">` +
+      `<dt>块</dt><dd><a href="#blk-${esc(r.b)}">${esc(r.b)} ${esc(b ? b.name : '')}</a></dd><dt>档位</dt><dd>${r.t} ${TIER[r.t][0]}</dd>` +
+      `<dt>和机器人</dt><dd>${esc(r.rel)}</dd><dt>文件</dt><dd>${esc(r.doc)}${r.date ? '（' + esc(r.date) + '）' : ''}</dd>` +
+      `<dt>原文</dt><dd>${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a>` : '<span class="muted">没有链接</span>'}</dd>${localLink(r.arc)}</dl>`;
   }
 
-  // ---------- 图 ----------
   function colorOf(kind, key) { return kind === 'stage' ? (SCOL[key] || 'var(--t-e)') : kind === 'none' ? 'var(--accent)' : (VCOL[key] || 'var(--v-unk)'); }
   function srcList(src) { return (src || []).map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener">出处 ${i + 1}</a>`).join('　'); }
   function drawChart(box, spec) {
@@ -307,37 +315,46 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
     $('#nav').innerHTML = NAVS().map(([k, t]) => `<a href="#${k}" class="${id === k || (id.startsWith(k + '-') && k !== 'home') ? 'on' : ''}">${esc(t)}</a>`).join('');
   }
   function sectionPage(sid, subid) {
-    const sec = REPORT[sid], meta = CORE.sections.find((s) => s.id === sid);
-    if (!sec) return notFound();
-    const subs = sec.subs, cur = subs.find((s) => s.id === subid) || null;
-    let html = `<div class="page"><h1 class="ptitle">${esc(sec.title)}</h1>`;
-    if (!cur) html += `<div class="prose">${sec.intro}</div>`;
-    if (subs.length) {
-      html += `<h2 class="stitle" style="font-size:1rem;margin-top:22px">${cur ? '本部分的小节' : '分成这几小节，点开看'}</h2><div class="subnav">` +
-        subs.map((s) => `<a href="#${s.id}" class="${cur && cur.id === s.id ? 'on' : ''}">${esc(s.title.split(/[：:]/)[0])}</a>`).join('') + '</div>';
-    }
-    if (cur) {
-      html += `<h2 class="stitle">${esc(cur.title)}</h2><div class="prose">${cur.html}</div>`;
-      const big = sid === CORE.sections[1].id ? CORE.bigs.find((g) => cur.title.startsWith(g.id + ' ')) : null;
-      if (big) html += `<p><a href="#big-${big.id}">看「${esc(big.name)}」每一块的公司名单和证据 →</a></p>`;
-      const i = subs.indexOf(cur), prev = subs[i - 1], next = subs[i + 1];
-      html += `<div class="pn"><span>${prev ? `<a href="#${prev.id}">← ${esc(prev.title.split(/[：:]/)[0])}</a>` : `<a href="#${sid}">← ${esc(sec.title.split(/[：:]/)[0])}</a>`}</span>` +
-        `<span>${next ? `<a href="#${next.id}">${esc(next.title.split(/[：:]/)[0])} →</a>` : ''}</span></div>`;
-    } else if (subs.length) {
-      html += `<div class="pn"><span></span><a href="#${subs[0].id}">从第一小节开始：${esc(subs[0].title.split(/[：:]/)[0])} →</a></div>`;
-    }
-    view.innerHTML = html + '</div>';
-    mountCharts(view);
+    if (!CORE.sections.find((s) => s.id === sid)) return notFound();
+    view.innerHTML = '<div class="page"><p class="loading">正在读…</p></div>';
+    const ok = live();
+    load('report_' + sid).then(ok((sec) => {
+      const subs = sec.subs, cur = subs.find((s) => s.id === subid) || null;
+      let html = `<div class="page"><h1 class="ptitle">${esc(sec.title)}</h1>`;
+      if (!cur) html += `<div class="prose">${sec.intro}</div>`;
+      if (subs.length) {
+        html += `<h2 class="stitle" style="font-size:1rem;margin-top:22px">${cur ? '本部分的小节' : '分成这几小节，点开看'}</h2><div class="subnav">` +
+          subs.map((s) => `<a href="#${s.id}" class="${cur && cur.id === s.id ? 'on' : ''}">${esc(s.title.split(/[：:]/)[0])}</a>`).join('') + '</div>';
+      }
+      if (cur) {
+        html += `<h2 class="stitle">${esc(cur.title)}</h2><div class="prose">${cur.html}</div>`;
+        const big = sid === CORE.sections[1].id ? CORE.bigs.find((g) => cur.title.startsWith(g.id + ' ')) : null;
+        if (big) html += `<p><a href="#big-${big.id}">看「${esc(big.name)}」每一块的公司名单和证据 →</a></p>`;
+        const i = subs.indexOf(cur), prev = subs[i - 1], next = subs[i + 1];
+        html += `<div class="pn"><span>${prev ? `<a href="#${prev.id}">← ${esc(prev.title.split(/[：:]/)[0])}</a>` : `<a href="#${sid}">← ${esc(sec.title.split(/[：:]/)[0])}</a>`}</span>` +
+          `<span>${next ? `<a href="#${next.id}">${esc(next.title.split(/[：:]/)[0])} →</a>` : ''}</span></div>`;
+      } else if (subs.length) {
+        html += `<div class="pn"><span></span><a href="#${subs[0].id}">从第一小节开始：${esc(subs[0].title.split(/[：:]/)[0])} →</a></div>`;
+      }
+      view.innerHTML = html + '</div>';
+      mountCharts(view);
+    }));
   }
+
   function home() {
-    const s1 = REPORT[CORE.sections[0].id];
     const va = CORE.venues_all;
-    view.innerHTML = `<div class="page"><h1 class="ptitle">${esc(CORE.title)}</h1>` +
-      `<p class="lead">确认在做的公司 ${CORE.n_conf.toLocaleString()} 家：A 股 ${(va['A股'] || 0).toLocaleString()}，没上市 ${(va['没上市'] || 0).toLocaleString()}，港股美股 ${(va['港股美股'] || 0).toLocaleString()}，其他交易所 ${(va['其他交易所'] || 0).toLocaleString()}，不明 ${(va['不明'] || 0).toLocaleString()}。生成于 ${esc(CORE.built)}。</p>` +
-      `<div class="prose">${s1.intro}${s1.subs.map((s) => `<h2 class="stitle">${esc(s.title)}</h2>${s.html}`).join('')}</div>` +
-      `<h2 class="stitle">往下看</h2><div class="cards">${CORE.sections.slice(1).map((s) => `<a class="card" href="#${s.id}"><b>${esc(s.title)}</b><span>${s.subs.length ? s.subs.length + ' 小节' : ''}</span></a>`).join('')}` +
-      `<a class="card" href="#list"><b>各块公司名单</b><span>按块、档位、上市地筛选，每行有证据</span></a><a class="card" href="#robots"><b>整机厂名单</b><span>一家整机厂的一种类型一行</span></a></div></div>`;
+    view.innerHTML = '<div class="page"><p class="loading">正在读…</p></div>';
+    const ok = live();
+    load('report_' + CORE.sections[0].id).then(ok((s1) => {
+      view.innerHTML = `<div class="page"><h1 class="ptitle">${esc(CORE.title)}</h1>` +
+        `<p class="lead">确认在做的公司 ${CORE.n_conf.toLocaleString()} 家：A 股 ${(va['A股'] || 0).toLocaleString()}，没上市 ${(va['没上市'] || 0).toLocaleString()}，港股美股 ${(va['港股美股'] || 0).toLocaleString()}，其他交易所 ${(va['其他交易所'] || 0).toLocaleString()}，不明 ${(va['不明'] || 0).toLocaleString()}。生成于 ${esc(CORE.built)}。</p>` +
+        `<div class="prose">${s1.intro}${s1.subs.map((s) => `<h2 class="stitle">${esc(s.title)}</h2>${s.html}`).join('')}</div>` +
+        `<h2 class="stitle">往下看</h2><div class="cards">${CORE.sections.slice(1).map((s) => `<a class="card" href="#${s.id}"><b>${esc(s.title)}</b><span>${s.subs.length ? s.subs.length + ' 小节' : ''}</span></a>`).join('')}` +
+        `<a class="card" href="#list"><b>各块公司名单</b><span>按块、档位、上市地筛选，每行有证据</span></a><a class="card" href="#robots"><b>整机厂名单</b><span>一家整机厂的一种类型一行</span></a></div></div>`;
+      mountCharts(view);
+    }));
   }
+
   function vbar(counts) {
     const tot = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
     return `<div class="mini">${['A股', '没上市', '港股美股', '其他交易所', '不明'].map((v) => counts[v] ? `<span style="width:${counts[v] / tot * 100}%;background:${VCOL[v]}"></span>` : '').join('')}</div>`;
@@ -367,12 +384,12 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
     box.append(mk('上一页', page === 0, () => go(page - 1)), s, mk('下一页', page >= pages - 1, () => go(page + 1)));
   }
   function evTable(holder, rows, opts) {
-    // 通用名单表：rows 是证据行；可筛档位、上市地、搜索
+    // 通用名单表：rows 是行对象 {b 块, ci 公司序号, n 公司, v 上市地, t 档位, rel 关系, q 原句（名单页没有，展开时再读）}
     const st = { tiers: new Set(['A', 'B', 'C', 'D']), ven: '', q: '', blk: opts.blk || '', page: 0 };
     holder.innerHTML = `<div class="filters">${opts.blocks ? `<label>块<select class="f-blk"><option value="">全部</option>${opts.blocks.map((b) => `<option value="${b}">${b} ${esc(CORE.blocks[b].name)}</option>`).join('')}</select></label>` : ''}` +
       `<label>上市地<select class="f-ven"><option value="">全部</option>${['A股', '没上市', '港股美股', '其他交易所', '不明'].map((v) => `<option>${v}</option>`).join('')}</select></label>` +
       `<div><div class="muted" style="font-size:12px;margin-bottom:3px">档位</div><div class="f-tier"></div></div>` +
-      `<label style="flex:1 1 14em">搜索公司或证据<input type="search" class="f-q" placeholder="公司名、产品、原句里的词"></label></div>` +
+      `<label style="flex:1 1 14em">搜索${opts.blocks ? '公司或关系' : '公司或证据'}<input type="search" class="f-q" placeholder="${opts.blocks ? '公司名、产品' : '公司名、产品、原句里的词'}"></label></div>` +
       `<div class="count"></div><div class="gridwrap"><table class="grid"><thead><tr>${opts.blocks ? '<th>块</th>' : ''}<th>公司</th><th>上市地</th><th>档位</th><th>和机器人的关系</th></tr></thead><tbody></tbody></table></div><div class="pager"></div>`;
     $('.f-tier', holder).appendChild(tierChips(st.tiers, () => { st.page = 0; draw(); }));
     if (opts.blocks) $('.f-blk', holder).addEventListener('change', (e) => { st.blk = e.target.value; st.page = 0; draw(); });
@@ -381,60 +398,70 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
     const ncol = opts.blocks ? 5 : 4;
     function draw() {
       const rs = rows.filter((r) => {
-        const c = COMP.rows[r[1]];
-        if (st.blk && r[0] !== st.blk) return false;
-        if (!st.tiers.has(r[2])) return false;
-        if (st.ven && c[1] !== st.ven) return false;
-        if (st.q && !(c[0] + ' ' + (c[4] || []).join(' ') + ' ' + r[3] + ' ' + r[4]).toLowerCase().includes(st.q)) return false;
+        if (st.blk && r.b !== st.blk) return false;
+        if (!st.tiers.has(r.t)) return false;
+        if (st.ven && r.v !== st.ven) return false;
+        if (st.q && !(r.n + ' ' + (r.al || []).join(' ') + ' ' + r.rel + ' ' + (r.q || '')).toLowerCase().includes(st.q)) return false;
         return true;
       });
-      const firms = new Set(rs.filter((r) => r[2] !== 'D').map((r) => r[1])).size;
+      const firms = new Set(rs.filter((r) => r.t !== 'D').map((r) => r.ci)).size;
       $('.count', holder).textContent = `${rs.length.toLocaleString()} 行；确认在做（A–C）的公司 ${firms.toLocaleString()} 家`;
       const pages = Math.max(1, Math.ceil(rs.length / PAGE)); st.page = Math.min(st.page, pages - 1);
       const part = rs.slice(st.page * PAGE, st.page * PAGE + PAGE);
       const tb = $('tbody', holder);
-      tb.innerHTML = part.length ? part.map((r, i) => { const c = COMP.rows[r[1]];
-        return `<tr class="row" data-i="${i}">${opts.blocks ? `<td><span class="muted">${esc(r[0])}</span> ${esc(CORE.blocks[r[0]].name)}</td>` : ''}<td><a href="#co-${r[1]}">${esc(c[0])}</a></td>` +
-          `<td><span class="tag"><span class="sw" style="background:${VCOL[c[1]] || 'var(--v-unk)'}"></span>${esc(c[1])}</span></td><td><span class="tag"><span class="sw" style="background:${TIER[r[2]][1]}"></span>${r[2]}</span></td><td>${esc(r[3])}</td></tr>`; }).join('')
+      tb.innerHTML = part.length ? part.map((r, i) => `<tr class="row" data-i="${i}">${opts.blocks ? `<td><span class="muted">${esc(r.b)}</span> ${esc(CORE.blocks[r.b].name)}</td>` : ''}<td><a href="#co-${r.ci}">${esc(r.n)}</a></td>` +
+          `<td><span class="tag"><span class="sw" style="background:${VCOL[r.v] || 'var(--v-unk)'}"></span>${esc(r.v)}</span></td><td><span class="tag"><span class="sw" style="background:${TIER[r.t][1]}"></span>${r.t}</span></td><td>${esc(r.rel)}</td></tr>`).join('')
         : `<tr><td colspan="${ncol}" class="loading">没有符合条件的行。</td></tr>`;
       tb.querySelectorAll('tr.row').forEach((tr) => tr.addEventListener('click', (e) => {
         if (e.target.closest('a')) return;
         const nx = tr.nextElementSibling;
         if (nx && nx.classList.contains('detail')) { nx.remove(); return; }
-        tr.insertAdjacentHTML('afterend', `<tr class="detail"><td colspan="${ncol}">${evRowHtml(part[+tr.dataset.i], false)}</td></tr>`);
+        const r = part[+tr.dataset.i];
+        tr.insertAdjacentHTML('afterend', `<tr class="detail"><td colspan="${ncol}"><p class="loading" style="padding:4px 0">正在读证据…</p></td></tr>`);
+        const cell = tr.nextElementSibling.firstElementChild;
+        (r.q !== undefined ? Promise.resolve(r) : evRows(r.b).then((rs2) => rs2.find((x) => x.ci === r.ci) || r))
+          .then((full) => { cell.innerHTML = full.q !== undefined ? evRowHtml(full, false) : '<p class="muted">这一行的证据没读出来。</p>'; });
       }));
       pager($('.pager', holder), st.page, pages, (p) => { st.page = p; draw(); holder.scrollIntoView(); });
     }
     draw();
   }
+
   function blockPage(bid) {
     const B = CORE.blocks[bid]; if (!B) return notFound();
     const g = CORE.bigs.find((x) => x.id === B.big);
     view.innerHTML = `<div class="page wide"><p class="crumbs"><a href="#${CORE.sections[1].id}">产业链地图</a> › <a href="#big-${g.id}">${esc(g.name)}</a></p>` +
       `<h1 class="ptitle">${esc(bid)} ${esc(B.name)}</h1><dl class="kv" style="max-width:60em"><dt>这一块是什么</dt><dd>${esc(B.product || '')}</dd><dt>收哪些公司</dt><dd>${esc(B.rule || '')}</dd><dt>层</dt><dd>${esc(B.layer)}</dd></dl>` +
       `<div id="bt"><p class="loading">正在读这一块的名单…</p></div></div>`;
-    load('ev_' + B.big).then((E) => evTable($('#bt'), E.rows.filter((r) => r[0] === bid), {}));
+    evRows(bid).then(live()((rows) => evTable($('#bt'), rows, {})));
   }
+
   function companyPage(i) {
-    const c = COMP.rows[i]; if (!c) return notFound();
-    const bigsOf = [...new Set(c[5].map(([b]) => CORE.blocks[b] && CORE.blocks[b].big).filter(Boolean))];
-    view.innerHTML = `<div class="page"><h1 class="ptitle">${esc(c[0])}</h1><dl class="kv"><dt>上市地</dt><dd><span class="tag"><span class="sw" style="background:${VCOL[c[1]] || 'var(--v-unk)'}"></span>${esc(c[1])}</span>　${esc(c[2])}</dd>` +
-      `${c[3] ? `<dt>代码</dt><dd>${esc(c[3])}</dd>` : ''}${(c[4] || []).length ? `<dt>别的写法</dt><dd>${c[4].map(esc).join('；')}</dd>` : ''}<dt>在哪几块</dt><dd>${c[5].map(([b, t]) => `<a href="#blk-${b}">${b} ${esc(CORE.blocks[b] ? CORE.blocks[b].name : '')}</a>（${t}）`).join('、')}</dd></dl>` +
-      `<h2 class="stitle">每一块的证据</h2><div id="cev"><p class="loading">正在读证据…</p></div></div>`;
-    Promise.all(bigsOf.map((g) => load('ev_' + g))).then((Es) => {
-      const rs = Es.flatMap((E) => E.rows.filter((r) => r[1] === i)).sort((a, b) => a[2].localeCompare(b[2]) || a[0].localeCompare(b[0]));
-      $('#cev').innerHTML = rs.map((r) => `<div style="margin:0 0 18px"><h3 style="font-size:15px;margin:0 0 4px"><a href="#blk-${r[0]}">${esc(r[0])} ${esc(CORE.blocks[r[0]].name)}</a>　<span class="tag"><span class="sw" style="background:${TIER[r[2]][1]}"></span>${r[2]} ${TIER[r[2]][0]}</span></h3>${evRowHtml(r, false)}</div>`).join('');
-    });
+    view.innerHTML = '<div class="page"><p class="loading">正在读…</p></div>';
+    const ok = live();
+    load('co_' + String(i % (CORE.co_shards || 64)).padStart(2, '0')).then(ok((S) => {
+      const C = S.rows[String(i)]; if (!C) return notFound();
+      const c = C.h;
+      view.innerHTML = `<div class="page"><h1 class="ptitle">${esc(c[0])}</h1><dl class="kv"><dt>上市地</dt><dd><span class="tag"><span class="sw" style="background:${VCOL[c[1]] || 'var(--v-unk)'}"></span>${esc(c[1])}</span>　${esc(c[2])}</dd>` +
+        `${c[3] ? `<dt>代码</dt><dd>${esc(c[3])}</dd>` : ''}${(c[4] || []).length ? `<dt>别的写法</dt><dd>${c[4].map(esc).join('；')}</dd>` : ''}<dt>在哪几块</dt><dd>${c[5].map(([b, t]) => `<a href="#blk-${b}">${b} ${esc(CORE.blocks[b] ? CORE.blocks[b].name : '')}</a>（${t}）`).join('、')}</dd></dl>` +
+        `<h2 class="stitle">每一块的证据</h2><div id="cev"></div></div>`;
+      const rs = C.ev.map((r) => ({ b: r[0], ci: i, n: c[0], v: c[1], t: r[1], rel: r[2], q: r[3], ctx: r[4], doc: r[5], date: r[6], url: r[7], arc: r[8] }))
+        .sort((a, b) => a.t.localeCompare(b.t) || a.b.localeCompare(b.b));
+      $('#cev').innerHTML = rs.map((r) => `<div style="margin:0 0 18px"><h3 style="font-size:15px;margin:0 0 4px"><a href="#blk-${r.b}">${esc(r.b)} ${esc(CORE.blocks[r.b] ? CORE.blocks[r.b].name : '')}</a>　<span class="tag"><span class="sw" style="background:${TIER[r.t][1]}"></span>${r.t} ${TIER[r.t][0]}</span></h3>${evRowHtml(r, false)}</div>`).join('');
+    })).catch(ok(() => notFound()));
   }
+
   function listPage() {
-    view.innerHTML = `<div class="page wide"><h1 class="ptitle">各块公司名单</h1><p class="lead">每块每家一行，含“只是概念”。点公司名打开这家公司的全部证据；点一行展开这一行的证据原句、上下文和出处。</p><div id="lt"><p class="loading">正在读名单（第一次要几秒）…</p></div></div>`;
-    Promise.all(CORE.bigs.map((g) => load('ev_' + g.id).catch(() => ({ rows: [] })))).then((Es) => {
-      evTable($('#lt'), Es.flatMap((E) => E.rows), { blocks: Object.keys(CORE.blocks) });
-    });
+    view.innerHTML = `<div class="page wide"><h1 class="ptitle">各块公司名单</h1><p class="lead">每块每家一行，含“只是概念”。点公司名打开这家公司的全部证据；点一行展开这一行的证据原句、上下文和出处。</p><div id="lt"><p class="loading">正在读名单…</p></div></div>`;
+    load('list').then(live()((L) => {
+      const rows = L.rows.map(([bi, ci, t, rel]) => ({ b: L.blocks[bi], ci, n: L.names[ci][0], v: L.names[ci][1], al: L.names[ci][2], t, rel }));
+      evTable($('#lt'), rows, { blocks: L.blocks });
+    }));
   }
+
   function robotsPage() {
     view.innerHTML = `<div class="page wide"><h1 class="ptitle">整机厂名单</h1><p class="lead">一行是一家整机厂的一种类型。走到哪一步按公司自己的文件、官网、发布会原文定；“不做整机”的是查过、只投资、合作或做平台的。点一行展开原句、出货、价格和出处。</p><div id="rt"><p class="loading">正在读名单…</p></div></div>`;
-    load('robots').then((R) => {
+    load('robots').then(live()((R) => {
       const C = {}; R.cols.forEach((c, i) => { C[c] = i; });
       const stg = (r) => r[C['阶段']] || ((/^(量产|对外销售|试点或小批量|样机或研发|只有宣布|不做整机)/.exec(r[C['现在走到哪一步']] || '') || [])[1] || '');
       R.rows.forEach((r) => { r._s = stg(r); r._r = r[C['地区']] || '其他'; r._g = r[C['资料完整度']] || ''; });
@@ -469,17 +496,17 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
         pager($('#rt .pager'), st.page, pages, (p) => { st.page = p; draw(); $('#rt').scrollIntoView(); });
       }
       draw();
-    });
+    }));
   }
   function guidePage() {
     view.innerHTML = '<div class="page"><h1 class="ptitle">资料索引和维护办法</h1><div class="prose" id="gd"><p class="loading">正在读…</p></div></div>';
-    load('guide').then((g) => { $('#gd').innerHTML = g.html; });
+    load('guide').then(live()((g) => { $('#gd').innerHTML = g.html; }));
   }
   function notFound() { view.innerHTML = '<div class="page"><h1 class="ptitle">没有这一页</h1><p><a href="#home">回到结论</a></p></div>'; }
 
   function route() {
     const h = decodeURIComponent(location.hash.slice(1)) || 'home';
-    hideTip(); $('#qres').hidden = true;
+    SEQ++; hideTip(); $('#qres').hidden = true;
     setNav(h);
     if (h === 'home') home();
     else if (/^s\d+$/.test(h)) sectionPage(h, null);
@@ -501,8 +528,11 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
     const s = q.value.trim().toLowerCase();
     if (!s) { qres.hidden = true; return; }
     if (!INDEX) {
-      INDEX = Object.entries(CORE.blocks).map(([b, B]) => ({ t: `${b} ${B.name}`, k: (b + ' ' + B.name + ' ' + B.product).toLowerCase(), h: 'blk-' + b, m: '块' }))
-        .concat(COMP.rows.map((c, i) => ({ t: c[0], k: (c[0] + ' ' + (c[4] || []).join(' ') + ' ' + c[3]).toLowerCase(), h: 'co-' + i, m: c[1] + '，' + c[5].length + ' 块' })));
+      INDEX = Object.entries(CORE.blocks).map(([b, B]) => ({ t: `${b} ${B.name}`, k: (b + ' ' + B.name + ' ' + B.product).toLowerCase(), h: 'blk-' + b, m: '块' }));
+      getComp().then(() => {
+        INDEX = INDEX.concat(COMP.rows.map((c, i) => ({ t: c[0], k: (c[0] + ' ' + (c[4] || []).join(' ') + ' ' + c[3]).toLowerCase(), h: 'co-' + i, m: c[1] + '，' + c[5].length + ' 块' })));
+        q.dispatchEvent(new Event('input'));
+      });
     }
     const hits = INDEX.filter((x) => x.k.includes(s)).sort((a, b) => (a.k.indexOf(s) - b.k.indexOf(s)) || a.t.length - b.t.length).slice(0, 14);
     qres.innerHTML = hits.length ? hits.map((x) => `<a href="#${esc(x.h)}">${esc(x.t)} <small>${esc(x.m)}</small></a>`).join('') : '<a>没有找到</a>';
@@ -512,8 +542,8 @@ dialog.ev::backdrop { background: rgba(10, 14, 20, .45); }
   document.addEventListener('click', (e) => { if (!e.target.closest('.search')) qres.hidden = true; });
   qres.addEventListener('click', () => { q.value = ''; qres.hidden = true; });
 
-  Promise.all([load('core'), load('report'), load('companies')]).then(([c, r, comp]) => {
-    CORE = c; REPORT = r; COMP = comp;
+  load('core').then((c) => {
+    CORE = c;
     if (CORE.preview) { $('#banner').hidden = false; $('#banner div').textContent = CORE.preview; }
     window.addEventListener('hashchange', route);
     route();
